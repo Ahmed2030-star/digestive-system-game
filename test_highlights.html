@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head><title>Test Highlights</title></head>
+<body>
+<h1>Highlight Image Test</h1>
+<div id="results"></div>
+<script>
+const highlights = [
+  '3_Anther_Highlight.svg',
+  '4_Filament_Highlight.svg', 
+  '5_Stigma_Highlight.svg',
+  '6_Style_Highlight.svg',
+  '7_Ovary_Highlight.svg',
+  '8_Ovule_Highlight.svg',
+  '9_Sepal_Highlight.svg',
+  '10_Petal_Highlight.svg'
+];
+
+const results = document.getElementById('results');
+
+highlights.forEach(src => {
+  const img = new Image();
+  img.src = 'assets/' + src;
+  img.onload = () => {
+    results.innerHTML += `<div style="color:green">✓ ${src}: ${img.naturalWidth}x${img.naturalHeight}</div>`;
+  };
+  img.onerror = () => {
+    results.innerHTML += `<div style="color:red">✗ ${src}: FAILED TO LOAD</div>`;
+  };
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flower Parts Explorer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Flower Parts Explorer</h1>
+    <p class="subtitle">Hover a part name to highlight it on the flower</p>
+    
+  </header>
+
+  <main>
+
+    
+
+  <section id="level1">
+
+    <div class="main-grid">
+      <!-- SVG overlay for connector lines (covers entire grid including side panels) -->
+      <svg class="connector-layer" id="connectorLayer" viewBox="0 0 210 297" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="var(--primary)" />
+          </marker>
+        </defs>
+        <g id="connectorLines"></g>
+      </svg>
+
+      <!-- Left Label Panel (Desktop) -->
+      <aside class="labels-panel left" aria-label="Left flower parts">
+
+  <button type="button" class="part-btn" data-part="anther">
+  <span class="label-text">Anther</span>
+  <span class="audio-btn" data-part="anther">🔊</span>
+</button>
+    
+  <button type="button" class="part-btn" data-part="filament">
+  <span class="label-text">Filament</span>
+  <span class="audio-btn" data-part="filament">🔊</span>
+</button>
+
+<button type="button" class="part-btn" data-part="petal">
+  <span class="label-text">Petal</span>
+  <span class="audio-btn" data-part="petal">🔊</span>
+</button>
+
+<button type="button" class="part-btn" data-part="sepal">
+  <span class="label-text">Sepal</span>
+  <span class="audio-btn" data-part="sepal">🔊</span>
+</button>
+
+
+
+</aside>
+
+      <!-- Flower Diagram (Center) -->
+      <section class="flower-container" id="flowerContainer" aria-label="Flower diagram">
+        <!-- Base layer (always visible) -->
+        <img src="assets/2_flower-base.svg" alt="Flower Base" class="layer base" id="baseLayer">
+
+        <!-- Flower parts (visible at low opacity) -->
+        <img src="assets/3_anther.svg" alt="Anther" class="layer" id="part-anther">
+        <img src="assets/4_Filament.svg" alt="Filament" class="layer" id="part-filament">
+        <img src="assets/5_Stigma.svg" alt="Stigma" class="layer" id="part-stigma">
+        <img src="assets/6_Style.svg" alt="Style" class="layer" id="part-style">
+        <img src="assets/7_Ovary.svg" alt="Ovary" class="layer" id="part-ovary">
+        <img src="assets/8_ovule.svg" alt="Ovule" class="layer" id="part-ovule">
+        <img src="assets/9_Sepal.svg" alt="Sepal" class="layer" id="part-sepal">
+        <img src="assets/10_Petal.svg" alt="Petal" class="layer" id="part-petal">
+
+        <!-- Highlight layers (shown on hover) -->
+        <img src="assets/3_Anther_Highlight.svg" alt="Anther Highlight" class="layer highlight-layer" id="highlight-anther">
+        <img src="assets/4_Filament_Highlight.svg" alt="Filament Highlight" class="layer highlight-layer" id="highlight-filament">
+        <img src="assets/5_Stigma_Highlight.svg" alt="Stigma Highlight" class="layer highlight-layer" id="highlight-stigma">
+        <img src="assets/6_Style_Highlight.svg" alt="Style Highlight" class="layer highlight-layer" id="highlight-style">
+        <img src="assets/7_Ovary_Highlight.svg" alt="Ovary Highlight" class="layer highlight-layer" id="highlight-ovary">
+        <img src="assets/8_Ovule_Highlight.svg" alt="Ovule Highlight" class="layer highlight-layer" id="highlight-ovule">
+        <img src="assets/9_Sepal_Highlight.svg" alt="Sepal Highlight" class="layer highlight-layer" id="highlight-sepal">
+        <img src="assets/10_Petal_Highlight.svg" alt="Petal Highlight" class="layer highlight-layer" id="highlight-petal">
+      </section>
+
+      <!-- Right Label Panel (Desktop) -->
+      <aside class="labels-panel right" aria-label="Right flower parts">
+
+  
+<button type="button" class="part-btn" data-part="stigma">
+  <span class="label-text">Stigma</span>
+  <span class="audio-btn" data-part="stigma">🔊</span>
+</button>
+
+<button type="button" class="part-btn" data-part="style">
+  <span class="label-text">Style</span>
+  <span class="audio-btn" data-part="style">🔊</span>
+</button>
+
+<button type="button" class="part-btn" data-part="ovary">
+  <span class="label-text">Ovary</span>
+  <span class="audio-btn" data-part="ovary">🔊</span>
+</button>
+
+<button type="button" class="part-btn" data-part="ovule">
+  <span class="label-text">Ovule</span>
+  <span class="audio-btn" data-part="ovule">🔊</span>
+</button>
+
+
+</aside>
+
+
+      <!-- Mobile Panel (Hidden on Desktop) -->
+<div class="mobile-panel" aria-label="Flower parts">
+
+  <button type="button" class="part-btn" data-part="anther" draggable="true">
+    <span class="label-text">Anther</span>
+  </button>
+
+  <button type="button" class="part-btn" data-part="filament" draggable="true">
+    <span class="label-text">Filament</span>
+  </button>
+
+  <button type="button" class="part-btn" data-part="stigma" draggable="true">
+    <span class="label-text">Stigma</span>
+  </button>
+
+  <button type="button" class="part-btn" data-part="style" draggable="true">
+    <span class="label-text">Style</span>
+  </button>
+
+  <button type="button" class="part-btn" data-part="ovary" draggable="true">
+    <span class="label-text">Ovary</span>
+  </button>
+
+  <button type="button" class="part-btn" data-part="ovule" draggable="true">
+    <span class="label-text">Ovule</span>
+  </button>
+
+  <button type="button" class="part-btn" data-part="sepal" draggable="true">
+    <span class="label-text">Sepal</span>
+  </button>
+
+  <button type="button" class="part-btn" data-part="petal" draggable="true">
+    <span class="label-text">Petal</span>
+  </button>
+
+</div>
+
+</div> <!-- main-grid -->
+
+<div class="start-challenge-wrapper">
+  <button id="startChallengeBtn">
+    Start Challenge
+  </button>
+</div>
+
+</section>
+
+</section> <!-- level1 -->
+
+<section id="level2" hidden>
+
+  <h2>Challenge Mode</h2>
+
+  <!-- WORD BANK -->
+  <section class="word-bank">
+
+    <div class="drag-word" draggable="true" data-part="anther">Anther</div>
+    <div class="drag-word" draggable="true" data-part="filament">Filament</div>
+    <div class="drag-word" draggable="true" data-part="stigma">Stigma</div>
+    <div class="drag-word" draggable="true" data-part="style">Style</div>
+
+    <div class="drag-word" draggable="true" data-part="ovary">Ovary</div>
+    <div class="drag-word" draggable="true" data-part="ovule">Ovule</div>
+    <div class="drag-word" draggable="true" data-part="sepal">Sepal</div>
+    <div class="drag-word" draggable="true" data-part="petal">Petal</div>
+
+  </section>
+
+  </div>
+
+  <div class="challenge-grid">
+
+    <!-- Connector Layer -->
+    <svg
+      class="challenge-connector-layer"
+      id="challengeConnectorLayer"
+      aria-hidden="true">
+
+      <g id="challengeConnectorLines"></g>
+
+    </svg>
+
+    <!-- LEFT SLOTS -->
+    <aside class="labels-panel left">
+
+      <div class="answer-slot" data-part="anther"></div>
+      <div class="answer-slot" data-part="filament"></div>
+      <div class="answer-slot" data-part="petal"></div>
+      <div class="answer-slot" data-part="sepal"></div>      
+
+    </aside>
+
+    <!-- FLOWER -->
+<section class="flower-container challenge-flower">
+
+  <img src="assets/2_flower-base.svg"
+       alt="Flower Base"
+       class="layer base"
+       id="challenge-part-base">
+
+  <img src="assets/3_anther.svg"
+       alt="Anther"
+       class="layer"
+       id="challenge-part-anther">
+
+  <img src="assets/4_Filament.svg"
+       alt="Filament"
+       class="layer"
+       id="challenge-part-filament">
+
+  <img src="assets/5_Stigma.svg"
+       alt="Stigma"
+       class="layer"
+       id="challenge-part-stigma">
+
+  <img src="assets/6_Style.svg"
+       alt="Style"
+       class="layer"
+       id="challenge-part-style">
+
+  <img src="assets/7_Ovary.svg"
+       alt="Ovary"
+       class="layer"
+       id="challenge-part-ovary">
+
+  <img src="assets/8_Ovule.svg"
+       alt="Ovule"
+       class="layer"
+       id="challenge-part-ovule">
+
+  <img src="assets/9_Sepal.svg"
+       alt="Sepal"
+       class="layer"
+       id="challenge-part-sepal">
+
+  <img src="assets/10_Petal.svg"
+       alt="Petal"
+       class="layer"
+       id="challenge-part-petal">
+
+       <!-- HIGHLIGHTS -->
+<img src="assets/3_Anther_Highlight.svg"
+     alt="Anther Highlight"
+     class="layer highlight-layer"
+     id="challenge-highlight-anther">
+
+<img src="assets/4_Filament_Highlight.svg"
+     alt="Filament Highlight"
+     class="layer highlight-layer"
+     id="challenge-highlight-filament">
+
+<img src="assets/5_Stigma_Highlight.svg"
+     alt="Stigma Highlight"
+     class="layer highlight-layer"
+     id="challenge-highlight-stigma">
+
+<img src="assets/6_Style_Highlight.svg"
+     alt="Style Highlight"
+     class="layer highlight-layer"
+     id="challenge-highlight-style">
+
+<img src="assets/7_Ovary_Highlight.svg"
+     alt="Ovary Highlight"
+     class="layer highlight-layer"
+     id="challenge-highlight-ovary">
+
+<img src="assets/8_Ovule_Highlight.svg"
+     alt="Ovule Highlight"
+     class="layer highlight-layer"
+     id="challenge-highlight-ovule">
+
+<img src="assets/9_Sepal_Highlight.svg"
+     alt="Sepal Highlight"
+     class="layer highlight-layer"
+     id="challenge-highlight-sepal">
+
+<img src="assets/10_Petal_Highlight.svg"
+     alt="Petal Highlight"
+     class="layer highlight-layer"
+     id="challenge-highlight-petal">
+
+</section>
+
+     <!-- RIGHT SLOTS -->
+    <aside class="labels-panel right">
+
+      <div class="answer-slot" data-part="stigma"></div>
+      <div class="answer-slot" data-part="style"></div>
+      <div class="answer-slot" data-part="ovary"></div>
+      <div class="answer-slot" data-part="ovule"></div>
+
+    </aside>
+
+  </div>
+
+  <!-- CONTROLS -->
+
+  <div class="challenge-controls">
+
+    <button id="checkAnswersBtn">
+      CHECK ANSWERS
+    </button>
+
+    <button id="resetIncorrectBtn">
+      RESET INCORRECT
+    </button>
+
+    <button id="resetAllBtn">
+      RESET ALL
+    </button>
+
+   
+
+    <button id="downloadExerciseBtn">
+      DOWNLOAD EXERCISE
+    </button>
+
+  </div>
+
+  <button id="startExamBtn">
+    Start Exam
+</button>
+
+<button id="backToExploreBtn">
+  ← Back
+</button>
+
+</section> <!-- level2 -->
+
+<section id="level3" hidden>
+
+  <div class="exam-container">
+
+    <h2 class="exam-title">
+      Level 3 Exam Mode
+    </h2>
+
+    <div class="exam-progress-container">
+
+      <div class="exam-progress-bar">
+        <div id="examProgressFill"></div>
+      </div>
+
+      <div id="examProgressText">
+        Question 1 of 6
+      </div>
+
+    </div>
+
+    <div id="examQuestion" class="exam-question">
+</div>
+
+<div id="examOptions" class="exam-options">
+</div>
+
+<div id="examFeedback">
+</div>
+
+<div class="exam-actions"></div>
+
+  <button id="backToChallengeBtn">
+    ← Back
+  </button>
+
+  <button id="prevQuestionBtn">
+    ← Previous
+  </button>
+
+  <button id="nextQuestionBtn">
+    Next Question →
+  </button>
+
+</div>
+
+</section>
+
+</main>
+
+<div id="winModal" class="win-modal">
+
+  <div class="win-box">
+
+    <h2>🎉 Congratulations!</h2>
+
+    <p>
+      You have successfully completed the activity.
+    </p>
+
+    <div class="credit-box">
+
+      <p><strong>Created by</strong></p>
+
+      <p>Ahmed Sayed Nasary</p>
+
+      <p>
+        For more educational games:
+      </p>
+
+      <p>
+        +20 109 225 3419
+      </p>
+
+    </div>
+
+    <button id="playAgainBtn">
+      Play Again
+    </button>
+    
+    <button id="closeModalBtn">
+      Close
+    </button>
+
+  </div>
+
+</div>
+
+<div id="partTooltip"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+
+<script src="app.js"></script>
+
+</body>
+</html>
