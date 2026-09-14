@@ -23,12 +23,12 @@ const highlightImage=document.getElementById("digestiveHighlight");
 
 // Connector target points as percentages of the displayed SVG image.
 const PART_TARGETS = {
-  mouth: { x: 57, y: 11 },
-  esophagus: { x: 55, y: 31 },
-  stomach: { x: 59, y: 58 },
-  "small-intestine": { x: 55, y: 76 },
-  "large-intestine": { x: 52, y: 72 },
-  anus: { x: 52, y: 96 }
+  mouth: { x: 57, y: 6 },
+  esophagus: { x: 50, y: 31 },
+  stomach: { x: 55, y: 58 },
+  "small-intestine": { x: 50, y: 76 },
+  "large-intestine": { x: 68, y: 72 },
+  anus: { x: 49, y: 95 }
 };
 const explorerGrid = document.getElementById("explorerGrid");
 const connectorLayer = document.getElementById("connectorLayer");
