@@ -1,7 +1,7 @@
 const PARTS = [
  {id:"whole",name:"Whole",image:"0_whole.svg",hint:"The complete digestive system."},
  {id:"mouth",name:"Mouth",image:"1_mouth.svg",highlight:"1_mouth_Highlight.svg",hint:"Food enters the digestive system here and chewing begins."},
- {id:"esophagus",name:"Esophagus",image:"2_esophagus.svg",highlight:"2_esophagus_Highlight.svg",hint:"A muscular tube that carries food from the mouth to the stomach."},
+ {id:"esophagus",name:"Food pipe (Esophagus)",image:"2_esophagus.svg",highlight:"2_esophagus_Highlight.svg",hint:"A muscular tube that carries food from the mouth to the stomach."},
  {id:"stomach",name:"Stomach",image:"3_stomach.svg",highlight:"3_stomach_Highlight.svg",hint:"A muscular organ that mixes food with digestive juices."},
  {id:"small-intestine",name:"Small Intestine",image:"4_small_intestine.svg",highlight:"4_small_intestine_Highlight.svg",hint:"Most digestion and absorption of nutrients take place here."},
  {id:"large-intestine",name:"Large Intestine",image:"5_large_intestine.svg",highlight:"5_large_intestine_Highlight.svg",hint:"It absorbs water and forms solid waste."},
@@ -9,6 +9,15 @@ const PARTS = [
 ];
 const PATH="assets/digestive-system/";
 const HIGHLIGHT_PATH="assets/digestive-system/highlights/";
+const AUDIO_FILES = {
+  mouth: "assets/audio/digestive-system/mouth.mp3",
+  esophagus: "assets/audio/digestive-system/esophagus.mp3",
+  stomach: "assets/audio/digestive-system/stomach.mp3",
+  smallIntestine: "assets/audio/digestive-system/small-intestine.mp3",
+  largeIntestine: "assets/audio/digestive-system/large-intestine.mp3",
+  anus: "assets/audio/digestive-system/anus.mp3"
+};
+const audioPlayer = new Audio();
 const image=document.getElementById("wholeImage");
 const highlightImage=document.getElementById("digestiveHighlight");
 
@@ -74,7 +83,15 @@ function showPart(p,e){
   if(e){tooltip.textContent=p.hint;tooltip.style.left=(e.clientX+15)+"px";tooltip.style.top=(e.clientY+15)+"px";tooltip.classList.add("show")}
 }
 function resetPart(){showPart(PARTS[0]);setActiveConnector('');tooltip.classList.remove('show')}
-function makeButton(p){const b=document.createElement('button');b.className='part-btn';b.dataset.part=p.id;b.textContent=p.name;b.onmouseenter=e=>showPart(p,e);b.onmousemove=e=>{tooltip.style.left=(e.clientX+15)+'px';tooltip.style.top=(e.clientY+15)+'px'};b.onmouseleave=resetPart;b.onclick=e=>showPart(p,e);return b}
+function playPartAudio(id){
+  const audioKey = id === "small-intestine" ? "smallIntestine" : id === "large-intestine" ? "largeIntestine" : id;
+  const audioFile = AUDIO_FILES[audioKey];
+  if (!audioFile) return;
+  audioPlayer.src = audioFile;
+  audioPlayer.currentTime = 0;
+  audioPlayer.play().catch(() => {});
+}
+function makeButton(p){const b=document.createElement('button');b.className='part-btn';b.dataset.part=p.id;b.textContent=p.name;b.onmouseenter=e=>showPart(p,e);b.onmousemove=e=>{tooltip.style.left=(e.clientX+15)+'px';tooltip.style.top=(e.clientY+15)+'px'};b.onmouseleave=resetPart;b.onclick=e=>{showPart(p,e);playPartAudio(p.id)};return b}
 PARTS.slice(0,4).forEach(p=>leftParts.appendChild(makeButton(p)));PARTS.slice(4).forEach(p=>rightParts.appendChild(makeButton(p)));PARTS.forEach(p=>mobileParts.appendChild(makeButton(p)));
 const challengeParts=PARTS.slice(1);
 function buildChallenge(){wordBank.innerHTML='';answerSlots.innerHTML='';challengeFeedback.textContent='';[...challengeParts].sort(()=>Math.random()-.5).forEach(p=>{const w=document.createElement('div');w.className='drag-word';w.draggable=true;w.dataset.part=p.id;w.textContent=p.name;w.ondragstart=e=>e.dataTransfer.setData('text/plain',p.id);wordBank.appendChild(w)});challengeParts.forEach((p,i)=>{const s=document.createElement('div');s.className='answer-slot';s.dataset.part=p.id;s.innerHTML=`<strong>${i+1}</strong><span>Drop the name here</span>`;s.ondragover=e=>e.preventDefault();s.ondrop=e=>{e.preventDefault();const id=e.dataTransfer.getData('text/plain');const item=challengeParts.find(x=>x.id===id);s.dataset.answer=id;s.innerHTML=`<strong>${i+1}</strong><span>${item.name}</span>`;document.querySelector(`.drag-word[data-part="${id}"]`)?.classList.add('used')};answerSlots.appendChild(s)})}
