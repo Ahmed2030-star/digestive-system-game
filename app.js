@@ -1,6 +1,5 @@
 const PARTS = [
- {id:"whole",name:"Whole",image:"0_whole.svg",hint:"The complete digestive system."},
- {id:"mouth",name:"Mouth",image:"1_mouth.svg",highlight:"1_mouth_Highlight.svg",hint:"Food enters the digestive system here and chewing begins."},
+  {id:"mouth",name:"Mouth",image:"1_mouth.svg",highlight:"1_mouth_Highlight.svg",hint:"Food enters the digestive system here and chewing begins."},
  {id:"esophagus",name:"Food pipe (Esophagus)",image:"2_esophagus.svg",highlight:"2_esophagus_Highlight.svg",hint:"A muscular tube that carries food from the mouth to the stomach."},
  {id:"stomach",name:"Stomach",image:"3_stomach.svg",highlight:"3_stomach_Highlight.svg",hint:"A muscular organ that mixes food with digestive juices."},
  {id:"small-intestine",name:"Small Intestine",image:"4_small_intestine.svg",highlight:"4_small_intestine_Highlight.svg",hint:"Most digestion and absorption of nutrients take place here."},
@@ -92,7 +91,8 @@ function playPartAudio(id){
   audioPlayer.play().catch(() => {});
 }
 function makeButton(p){const b=document.createElement('button');b.className='part-btn';b.dataset.part=p.id;b.textContent=p.name;b.onmouseenter=e=>showPart(p,e);b.onmousemove=e=>{tooltip.style.left=(e.clientX+15)+'px';tooltip.style.top=(e.clientY+15)+'px'};b.onmouseleave=resetPart;b.onclick=e=>{showPart(p,e);playPartAudio(p.id)};return b}
-PARTS.slice(0,4).forEach(p=>leftParts.appendChild(makeButton(p)));PARTS.slice(4).forEach(p=>rightParts.appendChild(makeButton(p)));PARTS.forEach(p=>mobileParts.appendChild(makeButton(p)));
+PARTS.slice(0, 3).forEach(p => leftParts.appendChild(makeButton(p)));
+PARTS.slice(3).forEach(p => rightParts.appendChild(makeButton(p)));
 const challengeParts=PARTS.slice(1);
 function buildChallenge(){wordBank.innerHTML='';answerSlots.innerHTML='';challengeFeedback.textContent='';[...challengeParts].sort(()=>Math.random()-.5).forEach(p=>{const w=document.createElement('div');w.className='drag-word';w.draggable=true;w.dataset.part=p.id;w.textContent=p.name;w.ondragstart=e=>e.dataTransfer.setData('text/plain',p.id);wordBank.appendChild(w)});challengeParts.forEach((p,i)=>{const s=document.createElement('div');s.className='answer-slot';s.dataset.part=p.id;s.innerHTML=`<strong>${i+1}</strong><span>Drop the name here</span>`;s.ondragover=e=>e.preventDefault();s.ondrop=e=>{e.preventDefault();const id=e.dataTransfer.getData('text/plain');const item=challengeParts.find(x=>x.id===id);s.dataset.answer=id;s.innerHTML=`<strong>${i+1}</strong><span>${item.name}</span>`;document.querySelector(`.drag-word[data-part="${id}"]`)?.classList.add('used')};answerSlots.appendChild(s)})}
 startChallengeBtn.onclick=()=>{level1.hidden=true;level2.hidden=false;buildChallenge()};backToExploreBtn.onclick=()=>{level2.hidden=true;level1.hidden=false};resetAllBtn.onclick=buildChallenge;
