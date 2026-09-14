@@ -12,3 +12,9 @@
 .whole-image{position:relative;z-index:1}
 .digestive-highlight{position:absolute!important;inset:15px;width:calc(100% - 30px)!important;height:calc(100% - 30px)!important;object-fit:contain;z-index:3;opacity:0;pointer-events:none;mix-blend-mode:multiply;transition:opacity .22s ease,filter .22s ease}
 .digestive-highlight.active{opacity:1;filter:drop-shadow(0 0 5px rgba(255,193,7,.9)) drop-shadow(0 0 13px rgba(255,193,7,.7))}
+.part-btn[data-part="esophagus"] {
+  font-size: 11px;
+  line-height: 1.2;
+  white-space: normal;
+  text-align: center;
+}
