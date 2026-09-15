@@ -23,16 +23,26 @@
   <h2>Challenge Mode</h2><p>Drag each name to its correct numbered position.</p>
   <div class="word-bank" id="wordBank"></div>
   <div class="challenge-layout">
-    <div class="diagram-card"><img src="assets/digestive-system/0_whole.svg" alt="Whole digestive system"></div>
-    <div class="slots" id="answerSlots"></div>
+    <svg id="challengeConnectorLayer" class="challenge-connector-layer" aria-hidden="true"><g id="challengeConnectorLines"></g></svg>
+    <div class="slots challenge-slots challenge-slots-left" id="challengeLeftSlots"></div>
+    <div class="diagram-card challenge-diagram-card"><div class="challenge-image-stack"><img id="challengeImage" src="assets/digestive-system/0_whole.svg" alt="Whole digestive system"><img id="challengeHighlightImage" class="challenge-highlight-image" src="" alt="" aria-hidden="true"></div></div>
+    <div class="slots challenge-slots challenge-slots-right" id="challengeRightSlots"></div>
   </div>
   <p id="challengeFeedback" class="feedback"></p>
-  <div class="controls"><button id="checkAnswersBtn">Check Answers</button><button id="resetAllBtn">Reset All</button><button id="startExamBtn">Start Exam</button><button id="backToExploreBtn">Back</button></div>
+  <div class="controls"><button id="checkAnswersBtn">Check Answers</button><button id="resetIncorrectBtn" type="button">RESET INCORRECT</button><button id="resetAllBtn">Reset All</button><button id="startExamBtn">Start Exam</button><button id="backToExploreBtn">Back</button></div>
 </section>
 <section id="level3" hidden>
  <div class="exam-container"><h2>Digestive System Exam</h2><div class="exam-progress-bar"><div id="examProgressFill"></div></div><p id="examProgressText"></p><div id="examQuestion" class="exam-question"></div><div id="examOptions" class="exam-options"></div><div id="examFeedback" class="feedback"></div><div class="controls"><button id="backToChallengeBtn">Back</button><button id="nextQuestionBtn">Next Question</button></div></div>
 </section>
 </main>
 <div id="partTooltip"></div>
+<div id="winModal" class="win-modal" role="dialog" aria-modal="true" aria-labelledby="winTitle">
+  <div class="win-box">
+    <h2 id="winTitle">Congratulations!</h2>
+    <p>You have successfully completed the activity.</p>
+    <button id="playAgainBtn" type="button">Play Again</button>
+    <button id="closeModalBtn" type="button">Close</button>
+  </div>
+</div>
 <script src="app.js"></script>
 </body></html>
