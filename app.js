@@ -78,54 +78,11 @@ document.getElementById("closeModalBtn").textContent = CONFIG.ui.challenge.close
 document.querySelector("#level3 h2").textContent = CONFIG.ui.exam.title;
 document.getElementById("backToChallengeBtn").textContent = CONFIG.ui.exam.back;
 document.getElementById("nextQuestionBtn").textContent = CONFIG.ui.exam.nextQuestion;
-const explorerAudioPlayer = new Audio();
-const challengeAudioPlayer = new Audio();
-const challengeCompletionSound = new Audio(
-  CONFIG.challenge.completionSound
-);
-const examSuccessSound = new Audio(
-  CONFIG.exam.successSound
-);
-const examWrongSound = new Audio(
-  CONFIG.exam.wrongSound
-);
-explorerAudioPlayer.preload = "auto";
-challengeAudioPlayer.preload = "auto";
-challengeCompletionSound.preload = "auto";
-examSuccessSound.preload = "auto";
-examWrongSound.preload = "auto";
-explorerAudioPlayer.volume = 1;
-challengeAudioPlayer.volume = 1;
-challengeCompletionSound.volume = 1;
-examSuccessSound.volume = 1;
-examWrongSound.volume = 1;
 const image=document.getElementById("wholeImage");
 const highlightImage=document.getElementById("digestiveHighlight");
 const level1=document.getElementById("level1");
 const level2=document.getElementById('level2');
 const level3=document.getElementById('level3');
-
-function stopExplorerAudio() {
-  explorerAudioPlayer.pause();
-  explorerAudioPlayer.currentTime = 0;
-}
-
-function stopChallengeAudio() {
-  challengeAudioPlayer.pause();
-  challengeAudioPlayer.currentTime = 0;
-}
-
-function stopChallengeCompletionSound() {
-  challengeCompletionSound.pause();
-  challengeCompletionSound.currentTime = 0;
-}
-
-function stopExamSounds() {
-  examSuccessSound.pause();
-  examSuccessSound.currentTime = 0;
-  examWrongSound.pause();
-  examWrongSound.currentTime = 0;
-}
 
 // Connector target points as percentages of the displayed SVG image.
 const explorerGrid = document.getElementById("explorerGrid");
@@ -213,19 +170,6 @@ function resetPart(){
   tooltip.classList.remove('show');
 }
 
-function playExplorerAudio(partId) {
-  if (level1.hidden) return;
-  const source = PARTS.find(part => part.id === partId)?.explorerAudio;
-  if (!source) return;
-  stopChallengeAudio();
-  explorerAudioPlayer.pause();
-  explorerAudioPlayer.currentTime = 0;
-  explorerAudioPlayer.src = source;
-  explorerAudioPlayer.play().catch(error => {
-    console.error("Explorer audio error:", error);
-  });
-}
-
 function makeButton(p){
   const b=document.createElement('button');
   b.className='part-btn audio-btn';
@@ -295,8 +239,8 @@ function clearChallengeDragState(){
 
 function leaveChallenge(){
   clearChallengeDragState();
-  stopChallengeAudio();
-  stopChallengeCompletionSound();
+  GameAudio.stopChallenge();
+  GameAudio.stopChallengeCompletion();
   hideChallengeHighlight();
   setChallengeConnector('');
   document.querySelectorAll('#level2 .answer-slot').forEach(slot => {
@@ -339,25 +283,12 @@ function buildChallenge(){
   requestAnimationFrame(updateChallengeConnectorLines);
 }
 
-function playChallengeAudio(partId) {
-  if (level2.hidden) return;
-  const source = PARTS.find(part => part.id === partId)?.challengeAudio;
-  if (!source) return;
-  stopExplorerAudio();
-  challengeAudioPlayer.pause();
-  challengeAudioPlayer.currentTime = 0;
-  challengeAudioPlayer.src = source;
-  challengeAudioPlayer.play().catch(error => {
-    console.error("Challenge audio error:", error);
-  });
-}
-
 document.addEventListener("click", event => {
   const button = event.target.closest("#level1 .audio-btn");
   if (!button) return;
   event.preventDefault();
   event.stopPropagation();
-  playExplorerAudio(button.dataset.part);
+  GameAudio.playExplorer(button.dataset.part);
 });
 
 document.addEventListener("click", event => {
@@ -365,21 +296,21 @@ document.addEventListener("click", event => {
   if (!button) return;
   event.preventDefault();
   event.stopPropagation();
-  playChallengeAudio(button.dataset.part);
+  GameAudio.playChallenge(button.dataset.part);
 });
 
 resetIncorrectBtn.onclick=()=>{document.querySelectorAll('#level2 .answer-slot').forEach(slot=>{const wrongId=slot.dataset.answer;if(!wrongId||wrongId===slot.dataset.part)return;document.querySelector(`#level2 .drag-word[data-part="${wrongId}"]`)?.classList.remove('used');slot.innerHTML=`<strong>${slot.querySelector('strong')?.textContent||''}</strong><span>${CONFIG.ui.challenge.emptySlot}</span>`;delete slot.dataset.answer;slot.classList.remove('filled','correct','incorrect','active','success')});clearChallengeDragState();challengeFeedback.textContent=CONFIG.ui.challenge.incorrectResetMessage};
-startChallengeBtn.onclick=()=>{level1.hidden=true;level2.hidden=false;stopExplorerAudio();hideExplorerHighlight();document.querySelectorAll('.connector-line').forEach(line => line.classList.remove('active'));document.querySelectorAll('.part-btn').forEach(button => button.classList.remove('active'));buildChallenge()};
+startChallengeBtn.onclick=()=>{level1.hidden=true;level2.hidden=false;GameAudio.stopExplorer();hideExplorerHighlight();document.querySelectorAll('.connector-line').forEach(line => line.classList.remove('active'));document.querySelectorAll('.part-btn').forEach(button => button.classList.remove('active'));buildChallenge()};
 backToExploreBtn.onclick=()=>{leaveChallenge();level2.hidden=true;level1.hidden=false};
 resetAllBtn.onclick=buildChallenge;
-checkAnswersBtn.onclick=()=>{let challengeScore=0;document.querySelectorAll('#level2 .answer-slot').forEach(slot=>{const correct=slot.dataset.answer===slot.dataset.part;slot.classList.toggle('correct',correct);slot.classList.toggle('incorrect',!correct);if(correct)challengeScore++});challengeFeedback.textContent=CONFIG.ui.challenge.scoreFormat.replace("{score}",challengeScore).replace("{total}",challengeParts.length);const score=challengeScore;if(score===6){challengeCompletionSound.pause();challengeCompletionSound.currentTime=0;challengeCompletionSound.muted=false;challengeCompletionSound.volume=1;challengeCompletionSound.play().catch(error=>{console.error("Completion sound error:",error)});document.getElementById("winModal")?.classList.add("show")}};
+checkAnswersBtn.onclick=()=>{let challengeScore=0;document.querySelectorAll('#level2 .answer-slot').forEach(slot=>{const correct=slot.dataset.answer===slot.dataset.part;slot.classList.toggle('correct',correct);slot.classList.toggle('incorrect',!correct);if(correct)challengeScore++});challengeFeedback.textContent=CONFIG.ui.challenge.scoreFormat.replace("{score}",challengeScore).replace("{total}",challengeParts.length);const score=challengeScore;if(score===6){GameAudio.playChallengeCompletion();document.getElementById("winModal")?.classList.add("show")}};
 const winModal=document.getElementById("winModal");
-document.getElementById("closeModalBtn")?.addEventListener("click",()=>winModal?.classList.remove("show"));
+document.getElementById("closeModalBtn")?.addEventListener("click",()=>{GameAudio.stopChallengeCompletion();winModal?.classList.remove("show")});
 document.getElementById("playAgainBtn")?.addEventListener("click",()=>{winModal?.classList.remove("show");resetAllBtn.click()});
 const examQuestions=CONFIG.exam.questions;let qi=0,score=0,answered=false;
-function loadQuestion(){answered=false;nextQuestionBtn.style.display='none';const q=examQuestions[qi];examProgressText.textContent=CONFIG.ui.exam.progressFormat.replace("{current}",qi+1).replace("{total}",examQuestions.length);examProgressFill.style.width=`${(qi+1)/examQuestions.length*100}%`;examQuestion.textContent=q.q;examFeedback.textContent='';examOptions.innerHTML='';[...q.o].sort(()=>Math.random()-.5).forEach(o=>{const b=document.createElement('button');b.className='exam-option';b.textContent=o;b.onclick=()=>{if(answered)return;answered=true;document.querySelectorAll('.exam-option').forEach(x=>x.disabled=true);if(o===q.a){score++;b.classList.add('correct');examFeedback.textContent=CONFIG.ui.exam.correctFeedback;examWrongSound.pause();examWrongSound.currentTime=0;examSuccessSound.pause();examSuccessSound.currentTime=0;examSuccessSound.muted=false;examSuccessSound.volume=1;examSuccessSound.play().catch(error=>{console.error("Success sound error:",error)})}else{b.classList.add('incorrect');examFeedback.textContent=CONFIG.ui.exam.incorrectFeedback.replace("{answer}",q.a);examSuccessSound.pause();examSuccessSound.currentTime=0;examWrongSound.pause();examWrongSound.currentTime=0;examWrongSound.muted=false;examWrongSound.volume=1;examWrongSound.play().catch(error=>{console.error("Wrong sound error:",error)})}nextQuestionBtn.style.display='inline-block'};examOptions.appendChild(b)})}
-startExamBtn.onclick=()=>{leaveChallenge();level2.hidden=true;level3.hidden=false;stopExplorerAudio();stopChallengeAudio();stopChallengeCompletionSound();hideExplorerHighlight();hideChallengeHighlight();qi=0;score=0;loadQuestion()};
-backToChallengeBtn.onclick=()=>{stopExamSounds();level3.hidden=true;level2.hidden=false};
+function loadQuestion(){answered=false;nextQuestionBtn.style.display='none';const q=examQuestions[qi];examProgressText.textContent=CONFIG.ui.exam.progressFormat.replace("{current}",qi+1).replace("{total}",examQuestions.length);examProgressFill.style.width=`${(qi+1)/examQuestions.length*100}%`;examQuestion.textContent=q.q;examFeedback.textContent='';examOptions.innerHTML='';[...q.o].sort(()=>Math.random()-.5).forEach(o=>{const b=document.createElement('button');b.className='exam-option';b.textContent=o;b.onclick=()=>{if(answered)return;answered=true;document.querySelectorAll('.exam-option').forEach(x=>x.disabled=true);if(o===q.a){score++;b.classList.add('correct');examFeedback.textContent=CONFIG.ui.exam.correctFeedback;GameAudio.playExamSuccess()}else{b.classList.add('incorrect');examFeedback.textContent=CONFIG.ui.exam.incorrectFeedback.replace("{answer}",q.a);GameAudio.playExamWrong()}nextQuestionBtn.style.display='inline-block'};examOptions.appendChild(b)})}
+startExamBtn.onclick=()=>{leaveChallenge();level2.hidden=true;level3.hidden=false;GameAudio.stopExplorer();GameAudio.stopChallenge();GameAudio.stopChallengeCompletion();hideExplorerHighlight();hideChallengeHighlight();qi=0;score=0;loadQuestion()};
+backToChallengeBtn.onclick=()=>{GameAudio.stopExam();level3.hidden=true;level2.hidden=false};
 nextQuestionBtn.onclick=()=>{qi++;if(qi<examQuestions.length)loadQuestion();else document.querySelector('.exam-container').innerHTML=`<div class="certificate"><h1>🏆 ${CONFIG.ui.certificate.title}</h1><h2>${CONFIG.ui.certificate.courseTitle}</h2><p>${CONFIG.ui.certificate.description}</p><h3>${CONFIG.ui.certificate.scoreLabel} ${score}/${examQuestions.length}</h3><p class="certificate-student">${CONFIG.ui.certificate.studentName}</p><button class="certificate-print" onclick="window.print()">${CONFIG.ui.certificate.printButton}</button></div>`};
 createConnectorLines();
 window.addEventListener("resize", updateConnectorLines);
