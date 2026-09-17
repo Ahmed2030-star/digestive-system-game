@@ -1,7 +1,22 @@
 const CONFIG = window.GAME_CONFIG;
 const PARTS = CONFIG.parts;
-document.querySelector("header h1").textContent = CONFIG.game.title;
-document.querySelector(".subtitle").textContent = CONFIG.game.subtitle;
+document.querySelector("header h1").textContent = CONFIG.ui.explorer.title;
+document.querySelector(".subtitle").textContent = CONFIG.ui.explorer.subtitle;
+document.getElementById("startChallengeBtn").textContent = CONFIG.ui.explorer.startChallenge;
+document.querySelector("#level2 h2").textContent = CONFIG.ui.challenge.title;
+document.querySelector("#level2 > p").textContent = CONFIG.ui.challenge.instructions;
+document.getElementById("checkAnswersBtn").textContent = CONFIG.ui.challenge.checkAnswers;
+document.getElementById("resetIncorrectBtn").textContent = CONFIG.ui.challenge.resetIncorrect;
+document.getElementById("resetAllBtn").textContent = CONFIG.ui.challenge.resetAll;
+document.getElementById("startExamBtn").textContent = CONFIG.ui.challenge.startExam;
+document.getElementById("backToExploreBtn").textContent = CONFIG.ui.challenge.back;
+document.querySelector("#winTitle").textContent = CONFIG.ui.challenge.congratulations;
+document.querySelector("#winModal .win-box p").textContent = CONFIG.ui.challenge.completionMessage;
+document.getElementById("playAgainBtn").textContent = CONFIG.ui.challenge.playAgain;
+document.getElementById("closeModalBtn").textContent = CONFIG.ui.challenge.close;
+document.querySelector("#level3 h2").textContent = CONFIG.ui.exam.title;
+document.getElementById("backToChallengeBtn").textContent = CONFIG.ui.exam.back;
+document.getElementById("nextQuestionBtn").textContent = CONFIG.ui.exam.nextQuestion;
 const explorerAudioPlayer = new Audio();
 const challengeAudioPlayer = new Audio();
 const challengeCompletionSound = new Audio(
@@ -240,7 +255,7 @@ function makeChallengeSlot(part,index){
   const slot=document.createElement('div');
   slot.className='answer-slot';
   slot.dataset.part=part.id;
-  slot.innerHTML=`<strong>${index+1}</strong><span>Drop the name here</span>`;
+  slot.innerHTML=`<strong>${index+1}</strong><span>${CONFIG.ui.challenge.emptySlot}</span>`;
   slot.ondragover=e=>e.preventDefault();
   slot.ondragenter=()=>{slot.classList.add('active');setChallengeConnector(part.id);showChallengeHighlight(part.id)};
   slot.onmouseenter=()=>{slot.classList.add('active');setChallengeConnector(part.id);showChallengeHighlight(part.id)};
@@ -292,19 +307,19 @@ document.addEventListener("click", event => {
   playChallengeAudio(button.dataset.part);
 });
 
-resetIncorrectBtn.onclick=()=>{document.querySelectorAll('#level2 .answer-slot').forEach(slot=>{const wrongId=slot.dataset.answer;if(!wrongId||wrongId===slot.dataset.part)return;document.querySelector(`#level2 .drag-word[data-part="${wrongId}"]`)?.classList.remove('used');slot.innerHTML=`<strong>${slot.querySelector('strong')?.textContent||''}</strong><span>Drop the name here</span>`;delete slot.dataset.answer;slot.classList.remove('filled','correct','incorrect','active','success')});clearChallengeDragState();challengeFeedback.textContent='Incorrect answers have been reset.'};
+resetIncorrectBtn.onclick=()=>{document.querySelectorAll('#level2 .answer-slot').forEach(slot=>{const wrongId=slot.dataset.answer;if(!wrongId||wrongId===slot.dataset.part)return;document.querySelector(`#level2 .drag-word[data-part="${wrongId}"]`)?.classList.remove('used');slot.innerHTML=`<strong>${slot.querySelector('strong')?.textContent||''}</strong><span>${CONFIG.ui.challenge.emptySlot}</span>`;delete slot.dataset.answer;slot.classList.remove('filled','correct','incorrect','active','success')});clearChallengeDragState();challengeFeedback.textContent=CONFIG.ui.challenge.incorrectResetMessage};
 startChallengeBtn.onclick=()=>{level1.hidden=true;level2.hidden=false;stopExplorerAudio();hideExplorerHighlight();document.querySelectorAll('.connector-line').forEach(line => line.classList.remove('active'));document.querySelectorAll('.part-btn').forEach(button => button.classList.remove('active'));buildChallenge()};
 backToExploreBtn.onclick=()=>{leaveChallenge();level2.hidden=true;level1.hidden=false};
 resetAllBtn.onclick=buildChallenge;
-checkAnswersBtn.onclick=()=>{let challengeScore=0;document.querySelectorAll('#level2 .answer-slot').forEach(slot=>{const correct=slot.dataset.answer===slot.dataset.part;slot.classList.toggle('correct',correct);slot.classList.toggle('incorrect',!correct);if(correct)challengeScore++});challengeFeedback.textContent=`Score: ${challengeScore}/${challengeParts.length}`;const score=challengeScore;if(score===6){challengeCompletionSound.pause();challengeCompletionSound.currentTime=0;challengeCompletionSound.muted=false;challengeCompletionSound.volume=1;challengeCompletionSound.play().catch(error=>{console.error("Completion sound error:",error)});document.getElementById("winModal")?.classList.add("show")}};
+checkAnswersBtn.onclick=()=>{let challengeScore=0;document.querySelectorAll('#level2 .answer-slot').forEach(slot=>{const correct=slot.dataset.answer===slot.dataset.part;slot.classList.toggle('correct',correct);slot.classList.toggle('incorrect',!correct);if(correct)challengeScore++});challengeFeedback.textContent=CONFIG.ui.challenge.scoreFormat.replace("{score}",challengeScore).replace("{total}",challengeParts.length);const score=challengeScore;if(score===6){challengeCompletionSound.pause();challengeCompletionSound.currentTime=0;challengeCompletionSound.muted=false;challengeCompletionSound.volume=1;challengeCompletionSound.play().catch(error=>{console.error("Completion sound error:",error)});document.getElementById("winModal")?.classList.add("show")}};
 const winModal=document.getElementById("winModal");
 document.getElementById("closeModalBtn")?.addEventListener("click",()=>winModal?.classList.remove("show"));
 document.getElementById("playAgainBtn")?.addEventListener("click",()=>{winModal?.classList.remove("show");resetAllBtn.click()});
 const examQuestions=CONFIG.exam.questions;let qi=0,score=0,answered=false;
-function loadQuestion(){answered=false;nextQuestionBtn.style.display='none';const q=examQuestions[qi];examProgressText.textContent=`Question ${qi+1} of ${examQuestions.length}`;examProgressFill.style.width=`${(qi+1)/examQuestions.length*100}%`;examQuestion.textContent=q.q;examFeedback.textContent='';examOptions.innerHTML='';[...q.o].sort(()=>Math.random()-.5).forEach(o=>{const b=document.createElement('button');b.className='exam-option';b.textContent=o;b.onclick=()=>{if(answered)return;answered=true;document.querySelectorAll('.exam-option').forEach(x=>x.disabled=true);if(o===q.a){score++;b.classList.add('correct');examFeedback.textContent='Correct answer!';examWrongSound.pause();examWrongSound.currentTime=0;examSuccessSound.pause();examSuccessSound.currentTime=0;examSuccessSound.muted=false;examSuccessSound.volume=1;examSuccessSound.play().catch(error=>{console.error("Success sound error:",error)})}else{b.classList.add('incorrect');examFeedback.textContent=`Correct answer: ${q.a}`;examSuccessSound.pause();examSuccessSound.currentTime=0;examWrongSound.pause();examWrongSound.currentTime=0;examWrongSound.muted=false;examWrongSound.volume=1;examWrongSound.play().catch(error=>{console.error("Wrong sound error:",error)})}nextQuestionBtn.style.display='inline-block'};examOptions.appendChild(b)})}
+function loadQuestion(){answered=false;nextQuestionBtn.style.display='none';const q=examQuestions[qi];examProgressText.textContent=CONFIG.ui.exam.progressFormat.replace("{current}",qi+1).replace("{total}",examQuestions.length);examProgressFill.style.width=`${(qi+1)/examQuestions.length*100}%`;examQuestion.textContent=q.q;examFeedback.textContent='';examOptions.innerHTML='';[...q.o].sort(()=>Math.random()-.5).forEach(o=>{const b=document.createElement('button');b.className='exam-option';b.textContent=o;b.onclick=()=>{if(answered)return;answered=true;document.querySelectorAll('.exam-option').forEach(x=>x.disabled=true);if(o===q.a){score++;b.classList.add('correct');examFeedback.textContent=CONFIG.ui.exam.correctFeedback;examWrongSound.pause();examWrongSound.currentTime=0;examSuccessSound.pause();examSuccessSound.currentTime=0;examSuccessSound.muted=false;examSuccessSound.volume=1;examSuccessSound.play().catch(error=>{console.error("Success sound error:",error)})}else{b.classList.add('incorrect');examFeedback.textContent=CONFIG.ui.exam.incorrectFeedback.replace("{answer}",q.a);examSuccessSound.pause();examSuccessSound.currentTime=0;examWrongSound.pause();examWrongSound.currentTime=0;examWrongSound.muted=false;examWrongSound.volume=1;examWrongSound.play().catch(error=>{console.error("Wrong sound error:",error)})}nextQuestionBtn.style.display='inline-block'};examOptions.appendChild(b)})}
 startExamBtn.onclick=()=>{leaveChallenge();level2.hidden=true;level3.hidden=false;stopExplorerAudio();stopChallengeAudio();stopChallengeCompletionSound();hideExplorerHighlight();hideChallengeHighlight();qi=0;score=0;loadQuestion()};
 backToChallengeBtn.onclick=()=>{stopExamSounds();level3.hidden=true;level2.hidden=false};
-nextQuestionBtn.onclick=()=>{qi++;if(qi<examQuestions.length)loadQuestion();else document.querySelector('.exam-container').innerHTML=`<div class="certificate"><h1>🏆 ${CONFIG.certificate.title}</h1><h2>${CONFIG.certificate.gameTitle}</h2><p>${CONFIG.certificate.description}</p><h3>Score: ${score}/${examQuestions.length}</h3><p class="certificate-student">${CONFIG.certificate.studentName}</p><button class="certificate-print" onclick="window.print()">🖨 Print Certificate</button></div>`};
+nextQuestionBtn.onclick=()=>{qi++;if(qi<examQuestions.length)loadQuestion();else document.querySelector('.exam-container').innerHTML=`<div class="certificate"><h1>🏆 ${CONFIG.ui.certificate.title}</h1><h2>${CONFIG.ui.certificate.courseTitle}</h2><p>${CONFIG.ui.certificate.description}</p><h3>${CONFIG.ui.certificate.scoreLabel} ${score}/${examQuestions.length}</h3><p class="certificate-student">${CONFIG.ui.certificate.studentName}</p><button class="certificate-print" onclick="window.print()">${CONFIG.ui.certificate.printButton}</button></div>`};
 createConnectorLines();
 window.addEventListener("resize", updateConnectorLines);
 window.addEventListener("resize", updateChallengeConnectorLines);

@@ -9,6 +9,46 @@ window.GAME_CONFIG = {
     language: "en-US"
   },
 
+  ui: {
+    explorer: {
+      title: "Digestive System Explorer",
+      subtitle: "Hover over a part name to highlight it.",
+      startChallenge: "Start Challenge"
+    },
+    challenge: {
+      title: "Challenge Mode",
+      instructions: "Drag each name to its correct numbered position.",
+      emptySlot: "Drop the name here",
+      checkAnswers: "Check Answers",
+      resetIncorrect: "RESET INCORRECT",
+      resetAll: "Reset All",
+      startExam: "Start Exam",
+      back: "Back",
+      incorrectResetMessage: "Incorrect answers have been reset.",
+      scoreFormat: "Score: {score}/{total}",
+      congratulations: "Congratulations!",
+      completionMessage: "You have successfully completed the activity.",
+      playAgain: "Play Again",
+      close: "Close"
+    },
+    exam: {
+      title: "Digestive System Exam",
+      progressFormat: "Question {current} of {total}",
+      correctFeedback: "Correct answer!",
+      incorrectFeedback: "Correct answer: {answer}",
+      nextQuestion: "Next Question",
+      back: "Back"
+    },
+    certificate: {
+      title: "Certificate of Excellence",
+      courseTitle: "Digestive System Explorer",
+      description: "This certificate is proudly awarded for successfully completing the Level 3 Exam.",
+      scoreLabel: "Score:",
+      studentName: "Ahmed Sayed Nasary",
+      printButton: "🖨 Print Certificate"
+    }
+  },
+
   parts: [
     {
       id: "mouth",
