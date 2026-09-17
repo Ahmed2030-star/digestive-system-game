@@ -1,0 +1,254 @@
+(() => {
+  let challengeParts;
+  let challengeLeftParts;
+  let challengeRightParts;
+  let wordBank;
+  let challengeLeftSlots;
+  let challengeRightSlots;
+  let challengeFeedback;
+  let checkAnswersBtn;
+  let resetIncorrectBtn;
+  let resetAllBtn;
+  let startExamBtn;
+  let backToExploreBtn;
+  let challengeLayout;
+  let challengeImage;
+  let challengeHighlightImage;
+  let challengeConnectorLayer;
+  let challengeConnectorLines;
+  let challengeTooltip;
+  let challengeDragging = false;
+  let winModal;
+  let initialized = false;
+
+  function showChallengeHighlight(partId) {
+    if (document.getElementById("level2").hidden) return;
+    const source = challengeParts.find(part => part.id === partId)?.challengeHighlight;
+    if (!source || !challengeHighlightImage) return;
+    challengeHighlightImage.src = source;
+    challengeHighlightImage.classList.add("active");
+  }
+
+  function hideHighlight() {
+    if (!challengeHighlightImage) return;
+    challengeHighlightImage.classList.remove("active");
+    challengeHighlightImage.removeAttribute("src");
+    challengeHighlightImage.removeAttribute("alt");
+  }
+
+  function setChallengeConnector(id) {
+    challengeConnectorLines.querySelectorAll(".challenge-connector-line").forEach(line =>
+      line.classList.toggle("active", line.dataset.part === id)
+    );
+  }
+
+  function clearChallengeDragState() {
+    challengeDragging = false;
+    hideHighlight();
+    setChallengeConnector("");
+    document.querySelectorAll("#level2 .answer-slot").forEach(slot => slot.classList.remove("active"));
+    challengeTooltip.classList.remove("show");
+  }
+
+  function cleanup() {
+    clearChallengeDragState();
+    GameAudio.stopChallenge();
+    GameAudio.stopChallengeCompletion();
+    hideHighlight();
+    setChallengeConnector("");
+    document.querySelectorAll("#level2 .answer-slot").forEach(slot => {
+      slot.classList.remove("active");
+    });
+  }
+
+  function updateConnectors() {
+    if (!challengeLayout || !challengeImage || !challengeConnectorLayer) return;
+    const layoutRect = challengeLayout.getBoundingClientRect();
+    const imageRect = challengeImage.getBoundingClientRect();
+    challengeConnectorLayer.setAttribute("viewBox", `0 0 ${layoutRect.width} ${layoutRect.height}`);
+    challengeParts.forEach(part => {
+      const slot = document.querySelector(`.challenge-slots .answer-slot[data-part="${part.id}"]`);
+      const line = challengeConnectorLines.querySelector(`.challenge-connector-line[data-part="${part.id}"]`);
+      const target = part.challengeConnectorTarget;
+      if (!slot || !line || !target) return;
+      const slotRect = slot.getBoundingClientRect();
+      const isLeft = slot.closest(".challenge-slots-left") !== null;
+      line.setAttribute("x1", (isLeft ? slotRect.right : slotRect.left) - layoutRect.left);
+      line.setAttribute("y1", slotRect.top + slotRect.height / 2 - layoutRect.top);
+      line.setAttribute("x2", imageRect.left - layoutRect.left + imageRect.width * target.x / 100);
+      line.setAttribute("y2", imageRect.top - layoutRect.top + imageRect.height * target.y / 100);
+    });
+  }
+
+  function makeChallengeSlot(part, index) {
+    const slot = document.createElement("div");
+    slot.className = "answer-slot";
+    slot.dataset.part = part.id;
+    slot.innerHTML = `<strong>${index + 1}</strong><span>${window.GAME_CONFIG.ui.challenge.emptySlot}</span>`;
+    slot.ondragover = event => event.preventDefault();
+    slot.ondragenter = () => {
+      slot.classList.add("active");
+      setChallengeConnector(part.id);
+      showChallengeHighlight(part.id);
+    };
+    slot.onmouseenter = () => {
+      slot.classList.add("active");
+      setChallengeConnector(part.id);
+      showChallengeHighlight(part.id);
+    };
+    slot.onmouseleave = () => {
+      slot.classList.remove("active");
+      setChallengeConnector("");
+      if (!challengeDragging) hideHighlight();
+    };
+    slot.ondrop = event => {
+      event.preventDefault();
+      const id = event.dataTransfer.getData("text/plain");
+      const item = challengeParts.find(partItem => partItem.id === id);
+      if (!item) return;
+      slot.dataset.answer = id;
+      slot.innerHTML = `<strong>${index + 1}</strong><span class="slot-answer-text">${item.name}</span>`;
+      const audioButton = document.createElement("button");
+      audioButton.type = "button";
+      audioButton.className = "audio-btn";
+      audioButton.dataset.part = id;
+      audioButton.setAttribute("aria-label", `Play ${item.name} audio`);
+      audioButton.textContent = "🔊";
+      slot.appendChild(audioButton);
+      document.querySelector(`#level2 .drag-word[data-part="${id}"]`)?.classList.add("used");
+      clearChallengeDragState();
+    };
+    return slot;
+  }
+
+  function buildChallenge() {
+    wordBank.innerHTML = "";
+    challengeLeftSlots.innerHTML = "";
+    challengeRightSlots.innerHTML = "";
+    challengeFeedback.textContent = "";
+    setChallengeConnector("");
+    challengeConnectorLines.innerHTML = "";
+    challengeParts.forEach(part => {
+      const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      line.classList.add("challenge-connector-line");
+      line.dataset.part = part.id;
+      challengeConnectorLines.appendChild(line);
+    });
+    [...challengeParts].sort(() => Math.random() - 0.5).forEach(part => {
+      const word = document.createElement("div");
+      word.className = "drag-word";
+      word.draggable = true;
+      word.dataset.part = part.id;
+      word.textContent = part.name;
+      word.onmouseenter = event => {
+        challengeTooltip.textContent = part.hint;
+        challengeTooltip.style.left = (event.clientX + 15) + "px";
+        challengeTooltip.style.top = (event.clientY + 15) + "px";
+        challengeTooltip.classList.add("show");
+      };
+      word.onmousemove = event => {
+        challengeTooltip.style.left = (event.clientX + 15) + "px";
+        challengeTooltip.style.top = (event.clientY + 15) + "px";
+      };
+      word.onmouseleave = () => challengeTooltip.classList.remove("show");
+      word.ondragstart = event => {
+        challengeDragging = true;
+        event.dataTransfer.setData("text/plain", part.id);
+        challengeTooltip.classList.remove("show");
+        showChallengeHighlight(part.id);
+        setChallengeConnector(part.id);
+      };
+      word.ondragend = clearChallengeDragState;
+      wordBank.appendChild(word);
+    });
+    challengeLeftParts.forEach((part, index) => challengeLeftSlots.appendChild(makeChallengeSlot(part, index)));
+    challengeRightParts.forEach((part, index) => challengeRightSlots.appendChild(makeChallengeSlot(part, index + 3)));
+    requestAnimationFrame(updateConnectors);
+  }
+
+  function init() {
+    if (initialized) return;
+    initialized = true;
+    const config = window.GAME_CONFIG;
+    challengeParts = config.challenge.leftParts.concat(config.challenge.rightParts).map(id => config.parts.find(part => part.id === id));
+    challengeLeftParts = config.challenge.leftParts.map(id => config.parts.find(part => part.id === id));
+    challengeRightParts = config.challenge.rightParts.map(id => config.parts.find(part => part.id === id));
+    wordBank = document.getElementById("wordBank");
+    challengeLeftSlots = document.getElementById("challengeLeftSlots");
+    challengeRightSlots = document.getElementById("challengeRightSlots");
+    challengeFeedback = document.getElementById("challengeFeedback");
+    checkAnswersBtn = document.getElementById("checkAnswersBtn");
+    resetIncorrectBtn = document.getElementById("resetIncorrectBtn");
+    resetAllBtn = document.getElementById("resetAllBtn");
+    startExamBtn = document.getElementById("startExamBtn");
+    backToExploreBtn = document.getElementById("backToExploreBtn");
+    challengeLayout = document.querySelector(".challenge-layout");
+    challengeImage = document.getElementById("challengeImage");
+    challengeHighlightImage = document.getElementById("challengeHighlightImage");
+    challengeHighlightImage.classList.add("challenge-digestive-highlight");
+    challengeConnectorLayer = document.getElementById("challengeConnectorLayer");
+    challengeConnectorLines = document.getElementById("challengeConnectorLines");
+    challengeTooltip = document.getElementById("partTooltip");
+    winModal = document.getElementById("winModal");
+
+    document.addEventListener("click", event => {
+      const button = event.target.closest("#level2 .answer-slot .audio-btn");
+      if (!button) return;
+      event.preventDefault();
+      event.stopPropagation();
+      GameAudio.playChallenge(button.dataset.part);
+    });
+    resetIncorrectBtn.onclick = () => {
+      document.querySelectorAll("#level2 .answer-slot").forEach(slot => {
+        const wrongId = slot.dataset.answer;
+        if (!wrongId || wrongId === slot.dataset.part) return;
+        document.querySelector(`#level2 .drag-word[data-part="${wrongId}"]`)?.classList.remove("used");
+        slot.innerHTML = `<strong>${slot.querySelector("strong")?.textContent || ""}</strong><span>${config.ui.challenge.emptySlot}</span>`;
+        delete slot.dataset.answer;
+        slot.classList.remove("filled", "correct", "incorrect", "active", "success");
+      });
+      clearChallengeDragState();
+      challengeFeedback.textContent = config.ui.challenge.incorrectResetMessage;
+    };
+    resetAllBtn.onclick = buildChallenge;
+    checkAnswersBtn.onclick = () => {
+      let challengeScore = 0;
+      document.querySelectorAll("#level2 .answer-slot").forEach(slot => {
+        const correct = slot.dataset.answer === slot.dataset.part;
+        slot.classList.toggle("correct", correct);
+        slot.classList.toggle("incorrect", !correct);
+        if (correct) challengeScore++;
+      });
+      challengeFeedback.textContent = config.ui.challenge.scoreFormat.replace("{score}", challengeScore).replace("{total}", challengeParts.length);
+      const score = challengeScore;
+      if (score === 6) {
+        GameAudio.playChallengeCompletion();
+        document.getElementById("winModal")?.classList.add("show");
+      }
+    };
+    document.getElementById("closeModalBtn")?.addEventListener("click", () => {
+      GameAudio.stopChallengeCompletion();
+      winModal?.classList.remove("show");
+    });
+    document.getElementById("playAgainBtn")?.addEventListener("click", () => {
+      winModal?.classList.remove("show");
+      resetAllBtn.click();
+    });
+    window.addEventListener("resize", updateConnectors);
+    window.addEventListener("scroll", updateConnectors, true);
+    challengeImage.addEventListener("load", updateConnectors);
+  }
+
+  function start() {
+    buildChallenge();
+  }
+
+  window.GameChallenge = {
+    init,
+    start,
+    resetAll: buildChallenge,
+    hideHighlight,
+    updateConnectors,
+    cleanup
+  };
+})();
