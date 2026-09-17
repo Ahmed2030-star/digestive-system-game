@@ -1,54 +1,17 @@
-const PARTS = [
-  {id:"mouth",name:"Mouth",image:"1_mouth.svg",highlight:"1_mouth_Highlight.svg",hint:"Food enters the digestive system here and chewing begins."},
- {id:"esophagus",name:"Food pipe (Esophagus)",image:"2_esophagus.svg",highlight:"2_esophagus_Highlight.svg",hint:"A muscular tube that carries food from the mouth to the stomach."},
- {id:"stomach",name:"Stomach",image:"3_stomach.svg",highlight:"3_stomach_Highlight.svg",hint:"A muscular organ that mixes food with digestive juices."},
- {id:"small-intestine",name:"Small Intestine",image:"4_small_intestine.svg",highlight:"4_small_intestine_Highlight.svg",hint:"Most digestion and absorption of nutrients take place here."},
- {id:"large-intestine",name:"Large Intestine",image:"5_large_intestine.svg",highlight:"5_large_intestine_Highlight.svg",hint:"It absorbs water and forms solid waste."},
- {id:"anus",name:"Anus",image:"6_anus.svg",highlight:"6_anus_Highlight.svg",hint:"The opening through which solid waste leaves the body."}
-];
-const PATH="assets/digestive-system/";
-const EXPLORER_HIGHLIGHT_FILES = {
-  mouth: "assets/digestive-system/explorer-highlights/1_mouth_Highlight.svg",
-  esophagus: "assets/digestive-system/explorer-highlights/2_esophagus_Highlight.svg",
-  stomach: "assets/digestive-system/explorer-highlights/3_stomach_Highlight.svg",
-  "small-intestine": "assets/digestive-system/explorer-highlights/4_small_intestine_Highlight.svg",
-  "large-intestine": "assets/digestive-system/explorer-highlights/5_large_intestine_Highlight.svg",
-  anus: "assets/digestive-system/explorer-highlights/6_anus_Highlight.svg"
-};
-const CHALLENGE_HIGHLIGHT_FILES = {
-  mouth: "assets/digestive-system/challenge-highlights/1_mouth_Highlight.svg",
-  esophagus: "assets/digestive-system/challenge-highlights/2_esophagus_Highlight.svg",
-  stomach: "assets/digestive-system/challenge-highlights/3_stomach_Highlight.svg",
-  "small-intestine": "assets/digestive-system/challenge-highlights/4_small_intestine_Highlight.svg",
-  "large-intestine": "assets/digestive-system/challenge-highlights/5_large_intestine_Highlight.svg",
-  anus: "assets/digestive-system/challenge-highlights/6_anus_Highlight.svg"
-};
-const EXPLORER_AUDIO_FILES = {
-  mouth: "assets/audio/digestive-system/explorer/mouth.mp3",
-  esophagus: "assets/audio/digestive-system/explorer/esophagus.mp3",
-  stomach: "assets/audio/digestive-system/explorer/stomach.mp3",
-  "small-intestine": "assets/audio/digestive-system/explorer/small-intestine.mp3",
-  "large-intestine": "assets/audio/digestive-system/explorer/large-intestine.mp3",
-  anus: "assets/audio/digestive-system/explorer/anus.mp3"
-};
-const CHALLENGE_AUDIO_FILES = {
-  mouth: "assets/audio/digestive-system/challenge/mouth.mp3",
-  esophagus: "assets/audio/digestive-system/challenge/esophagus.mp3",
-  stomach: "assets/audio/digestive-system/challenge/stomach.mp3",
-  "small-intestine": "assets/audio/digestive-system/challenge/small-intestine.mp3",
-  "large-intestine": "assets/audio/digestive-system/challenge/large-intestine.mp3",
-  anus: "assets/audio/digestive-system/challenge/anus.mp3"
-};
+const CONFIG = window.GAME_CONFIG;
+const PARTS = CONFIG.parts;
+document.querySelector("header h1").textContent = CONFIG.game.title;
+document.querySelector(".subtitle").textContent = CONFIG.game.subtitle;
 const explorerAudioPlayer = new Audio();
 const challengeAudioPlayer = new Audio();
 const challengeCompletionSound = new Audio(
-  "assets/audio/digestive-system/challenge/completion-sound.mp3"
+  CONFIG.challenge.completionSound
 );
 const examSuccessSound = new Audio(
-  "assets/audio/digestive-system/exam/success.mp3"
+  CONFIG.exam.successSound
 );
 const examWrongSound = new Audio(
-  "assets/audio/digestive-system/exam/wrong.mp3"
+  CONFIG.exam.wrongSound
 );
 explorerAudioPlayer.preload = "auto";
 challengeAudioPlayer.preload = "auto";
@@ -89,14 +52,6 @@ function stopExamSounds() {
 }
 
 // Connector target points as percentages of the displayed SVG image.
-const PART_TARGETS = {
-  mouth: { x: 57, y: 6 },
-  esophagus: { x: 50, y: 31 },
-  stomach: { x: 55, y: 58 },
-  "small-intestine": { x: 50, y: 76 },
-  "large-intestine": { x: 68, y: 72 },
-  anus: { x: 49, y: 95 }
-};
 const explorerGrid = document.getElementById("explorerGrid");
 const connectorLayer = document.getElementById("connectorLayer");
 const connectorLines = document.getElementById("connectorLines");
@@ -104,10 +59,10 @@ const SVG_NS = "http://www.w3.org/2000/svg";
 
 function createConnectorLines() {
   connectorLines.innerHTML = "";
-  Object.keys(PART_TARGETS).forEach(id => {
+  PARTS.forEach(part => {
     const line = document.createElementNS(SVG_NS, "line");
     line.classList.add("connector-line");
-    line.dataset.part = id;
+    line.dataset.part = part.id;
     connectorLines.appendChild(line);
   });
   updateConnectorLines();
@@ -118,7 +73,9 @@ function updateConnectorLines() {
   const gridRect = explorerGrid.getBoundingClientRect();
   const imageRect = image.getBoundingClientRect();
   connectorLayer.setAttribute("viewBox", `0 0 ${gridRect.width} ${gridRect.height}`);
-  Object.entries(PART_TARGETS).forEach(([id, point]) => {
+  PARTS.forEach(part => {
+    const id = part.id;
+    const point = part.explorerConnectorTarget;
     const button = document.querySelector(`.parts-panel .part-btn[data-part="${id}"]`);
     const line = connectorLines.querySelector(`.connector-line[data-part="${id}"]`);
     if (!button || !line) return;
@@ -141,7 +98,7 @@ function setActiveConnector(id) {
 
 function showExplorerHighlight(partId) {
   if (level1.hidden) return;
-  const source = EXPLORER_HIGHLIGHT_FILES[partId];
+  const source = PARTS.find(part => part.id === partId)?.explorerHighlight;
   if (!source || !highlightImage) return;
   highlightImage.src = source;
   highlightImage.classList.add("active");
@@ -182,7 +139,7 @@ function resetPart(){
 
 function playExplorerAudio(partId) {
   if (level1.hidden) return;
-  const source = EXPLORER_AUDIO_FILES[partId];
+  const source = PARTS.find(part => part.id === partId)?.explorerAudio;
   if (!source) return;
   stopChallengeAudio();
   explorerAudioPlayer.pause();
@@ -210,11 +167,9 @@ const rightParts=document.getElementById("rightParts");
 PARTS.slice(0, 3).forEach(p => leftParts.appendChild(makeButton(p)));
 PARTS.slice(3).forEach(p => rightParts.appendChild(makeButton(p)));
 
-const challengeParts=["mouth","esophagus","stomach","small-intestine","large-intestine","anus"].map(id=>PARTS.find(p=>p.id===id));
-const challengeLeftParts=challengeParts.slice(0,3);
-const challengeRightParts=challengeParts.slice(3);
-const challengeTargets={mouth:{x:57,y:6},esophagus:{x:50,y:31},stomach:{x:55,y:58},"small-intestine":{x:50,y:76},"large-intestine":{x:68,y:72},anus:{x:49,y:95}};
-const CHALLENGE_SLOT_OFFSETS={mouth:{x:0,y:0},esophagus:{x:0,y:0},stomach:{x:0,y:20},"small-intestine":{x:0,y:0},"large-intestine":{x:0,y:0},anus:{x:0,y:0}};
+const challengeParts=CONFIG.challenge.leftParts.concat(CONFIG.challenge.rightParts).map(id=>PARTS.find(p=>p.id===id));
+const challengeLeftParts=CONFIG.challenge.leftParts.map(id=>PARTS.find(p=>p.id===id));
+const challengeRightParts=CONFIG.challenge.rightParts.map(id=>PARTS.find(p=>p.id===id));
 const wordBank=document.getElementById('wordBank');
 const challengeLeftSlots=document.getElementById('challengeLeftSlots');
 const challengeRightSlots=document.getElementById('challengeRightSlots');
@@ -235,7 +190,7 @@ let challengeDragging=false;
 
 function showChallengeHighlight(partId) {
   if (level2.hidden) return;
-  const source = CHALLENGE_HIGHLIGHT_FILES[partId];
+  const source = PARTS.find(part => part.id === partId)?.challengeHighlight;
   if (!source || !challengeHighlightImage) return;
   challengeHighlightImage.src = source;
   challengeHighlightImage.classList.add('active');
@@ -278,7 +233,7 @@ function updateChallengeConnectorLines(){
   const layoutRect=challengeLayout.getBoundingClientRect();
   const imageRect=challengeImage.getBoundingClientRect();
   challengeConnectorLayer.setAttribute('viewBox',`0 0 ${layoutRect.width} ${layoutRect.height}`);
-  challengeParts.forEach(part=>{const slot=document.querySelector(`.challenge-slots .answer-slot[data-part="${part.id}"]`);const line=challengeConnectorLines.querySelector(`.challenge-connector-line[data-part="${part.id}"]`);const target=challengeTargets[part.id];if(!slot||!line||!target)return;const slotRect=slot.getBoundingClientRect();const isLeft=slot.closest('.challenge-slots-left')!==null;line.setAttribute('x1',(isLeft?slotRect.right:slotRect.left)-layoutRect.left);line.setAttribute('y1',slotRect.top+slotRect.height/2-layoutRect.top);line.setAttribute('x2',imageRect.left-layoutRect.left+imageRect.width*target.x/100);line.setAttribute('y2',imageRect.top-layoutRect.top+imageRect.height*target.y/100)})
+  challengeParts.forEach(part=>{const slot=document.querySelector(`.challenge-slots .answer-slot[data-part="${part.id}"]`);const line=challengeConnectorLines.querySelector(`.challenge-connector-line[data-part="${part.id}"]`);const target=part.challengeConnectorTarget;if(!slot||!line||!target)return;const slotRect=slot.getBoundingClientRect();const isLeft=slot.closest('.challenge-slots-left')!==null;line.setAttribute('x1',(isLeft?slotRect.right:slotRect.left)-layoutRect.left);line.setAttribute('y1',slotRect.top+slotRect.height/2-layoutRect.top);line.setAttribute('x2',imageRect.left-layoutRect.left+imageRect.width*target.x/100);line.setAttribute('y2',imageRect.top-layoutRect.top+imageRect.height*target.y/100)})
 }
 
 function makeChallengeSlot(part,index){
@@ -310,7 +265,7 @@ function buildChallenge(){
 
 function playChallengeAudio(partId) {
   if (level2.hidden) return;
-  const source = CHALLENGE_AUDIO_FILES[partId];
+  const source = PARTS.find(part => part.id === partId)?.challengeAudio;
   if (!source) return;
   stopExplorerAudio();
   challengeAudioPlayer.pause();
@@ -345,18 +300,11 @@ checkAnswersBtn.onclick=()=>{let challengeScore=0;document.querySelectorAll('#le
 const winModal=document.getElementById("winModal");
 document.getElementById("closeModalBtn")?.addEventListener("click",()=>winModal?.classList.remove("show"));
 document.getElementById("playAgainBtn")?.addEventListener("click",()=>{winModal?.classList.remove("show");resetAllBtn.click()});
-const examQuestions=[
- {q:"Where does food enter the digestive system?",o:["Mouth","Stomach","Anus","Large Intestine"],a:"Mouth"},
- {q:"Which tube carries food to the stomach?",o:["Esophagus","Small Intestine","Large Intestine","Anus"],a:"Esophagus"},
- {q:"Which organ mixes food with digestive juices?",o:["Stomach","Mouth","Anus","Esophagus"],a:"Stomach"},
- {q:"Where are most nutrients absorbed?",o:["Small Intestine","Large Intestine","Mouth","Anus"],a:"Small Intestine"},
- {q:"Which part absorbs water and forms solid waste?",o:["Large Intestine","Stomach","Esophagus","Mouth"],a:"Large Intestine"},
- {q:"Through which opening does solid waste leave the body?",o:["Anus","Mouth","Stomach","Esophagus"],a:"Anus"}
-];let qi=0,score=0,answered=false;
+const examQuestions=CONFIG.exam.questions;let qi=0,score=0,answered=false;
 function loadQuestion(){answered=false;nextQuestionBtn.style.display='none';const q=examQuestions[qi];examProgressText.textContent=`Question ${qi+1} of ${examQuestions.length}`;examProgressFill.style.width=`${(qi+1)/examQuestions.length*100}%`;examQuestion.textContent=q.q;examFeedback.textContent='';examOptions.innerHTML='';[...q.o].sort(()=>Math.random()-.5).forEach(o=>{const b=document.createElement('button');b.className='exam-option';b.textContent=o;b.onclick=()=>{if(answered)return;answered=true;document.querySelectorAll('.exam-option').forEach(x=>x.disabled=true);if(o===q.a){score++;b.classList.add('correct');examFeedback.textContent='Correct answer!';examWrongSound.pause();examWrongSound.currentTime=0;examSuccessSound.pause();examSuccessSound.currentTime=0;examSuccessSound.muted=false;examSuccessSound.volume=1;examSuccessSound.play().catch(error=>{console.error("Success sound error:",error)})}else{b.classList.add('incorrect');examFeedback.textContent=`Correct answer: ${q.a}`;examSuccessSound.pause();examSuccessSound.currentTime=0;examWrongSound.pause();examWrongSound.currentTime=0;examWrongSound.muted=false;examWrongSound.volume=1;examWrongSound.play().catch(error=>{console.error("Wrong sound error:",error)})}nextQuestionBtn.style.display='inline-block'};examOptions.appendChild(b)})}
 startExamBtn.onclick=()=>{leaveChallenge();level2.hidden=true;level3.hidden=false;stopExplorerAudio();stopChallengeAudio();stopChallengeCompletionSound();hideExplorerHighlight();hideChallengeHighlight();qi=0;score=0;loadQuestion()};
 backToChallengeBtn.onclick=()=>{stopExamSounds();level3.hidden=true;level2.hidden=false};
-nextQuestionBtn.onclick=()=>{qi++;if(qi<examQuestions.length)loadQuestion();else document.querySelector('.exam-container').innerHTML=`<div class="certificate"><h1>🏆 Certificate of Excellence</h1><h2>Digestive System Explorer</h2><p>This certificate is proudly awarded for successfully completing the Level 3 Exam.</p><h3>Score: ${score}/${examQuestions.length}</h3><p class="certificate-student">Ahmed Sayed Nasary</p><button class="certificate-print" onclick="window.print()">🖨 Print Certificate</button></div>`};
+nextQuestionBtn.onclick=()=>{qi++;if(qi<examQuestions.length)loadQuestion();else document.querySelector('.exam-container').innerHTML=`<div class="certificate"><h1>🏆 ${CONFIG.certificate.title}</h1><h2>${CONFIG.certificate.gameTitle}</h2><p>${CONFIG.certificate.description}</p><h3>Score: ${score}/${examQuestions.length}</h3><p class="certificate-student">${CONFIG.certificate.studentName}</p><button class="certificate-print" onclick="window.print()">🖨 Print Certificate</button></div>`};
 createConnectorLines();
 window.addEventListener("resize", updateConnectorLines);
 window.addEventListener("resize", updateChallengeConnectorLines);
