@@ -1,4 +1,65 @@
+function validateGameConfig(config) {
+  const errors = [];
+  const addMissing = (condition, path) => {
+    if (!condition) errors.push(`Missing or invalid ${path}`);
+  };
+
+  if (!config) return ["window.GAME_CONFIG"];
+  addMissing(Array.isArray(config.parts), "GAME_CONFIG.parts array");
+  if (Array.isArray(config.parts)) {
+    const ids = new Set();
+    config.parts.forEach((part, index) => {
+      const path = `GAME_CONFIG.parts[${index}]`;
+      addMissing(part && part.id, `${path}.id`);
+      if (part?.id && ids.has(part.id)) errors.push(`Duplicate ${path}.id: ${part.id}`);
+      if (part?.id) ids.add(part.id);
+      addMissing(part && part.name, `${path}.name`);
+      addMissing(part && part.hint, `${path}.hint`);
+      addMissing(part && part.explorerHighlight, `${path}.explorerHighlight`);
+      addMissing(part && part.challengeHighlight, `${path}.challengeHighlight`);
+      addMissing(part && part.explorerAudio, `${path}.explorerAudio`);
+      addMissing(part && part.challengeAudio, `${path}.challengeAudio`);
+      addMissing(Number.isFinite(part?.explorerConnectorTarget?.x), `${path}.explorerConnectorTarget.x`);
+      addMissing(Number.isFinite(part?.explorerConnectorTarget?.y), `${path}.explorerConnectorTarget.y`);
+      addMissing(Number.isFinite(part?.challengeConnectorTarget?.x), `${path}.challengeConnectorTarget.x`);
+      addMissing(Number.isFinite(part?.challengeConnectorTarget?.y), `${path}.challengeConnectorTarget.y`);
+      addMissing(part?.challengeSide === "left" || part?.challengeSide === "right", `${path}.challengeSide`);
+    });
+  }
+
+  const challenge = config.challenge;
+  addMissing(Array.isArray(challenge?.leftParts) && challenge.leftParts.length === 3, "GAME_CONFIG.challenge.leftParts with exactly 3 parts");
+  addMissing(Array.isArray(challenge?.rightParts) && challenge.rightParts.length === 3, "GAME_CONFIG.challenge.rightParts with exactly 3 parts");
+  addMissing(challenge?.completionSound, "GAME_CONFIG.challenge.completionSound");
+
+  const exam = config.exam;
+  addMissing(Array.isArray(exam?.questions) && exam.questions.length >= 6, "GAME_CONFIG.exam.questions with at least 6 questions");
+  addMissing(exam?.successSound, "GAME_CONFIG.exam.successSound");
+  addMissing(exam?.wrongSound, "GAME_CONFIG.exam.wrongSound");
+  if (Array.isArray(exam?.questions)) {
+    exam.questions.forEach((question, index) => {
+      const path = `GAME_CONFIG.exam.questions[${index}]`;
+      addMissing(question?.q, `${path}.q`);
+      addMissing(Array.isArray(question?.o) && question.o.length >= 2, `${path}.o with at least 2 options`);
+      addMissing(question?.a, `${path}.a`);
+      addMissing(Array.isArray(question?.o) && question.o.includes(question.a), `${path}.a included in ${path}.o`);
+    });
+  }
+
+  const certificate = config.ui?.certificate;
+  addMissing(certificate?.title, "GAME_CONFIG.ui.certificate.title");
+  addMissing(certificate?.courseTitle, "GAME_CONFIG.ui.certificate.courseTitle");
+  addMissing(certificate?.description, "GAME_CONFIG.ui.certificate.description");
+  return errors;
+}
+
 const CONFIG = window.GAME_CONFIG;
+const configErrors = validateGameConfig(CONFIG);
+if (configErrors.length) {
+  configErrors.forEach(error => console.error(`GAME_CONFIG validation error: ${error}`));
+  throw new Error("GAME_CONFIG validation failed.");
+}
+console.log("GAME_CONFIG validation passed.");
 const PARTS = CONFIG.parts;
 document.querySelector("header h1").textContent = CONFIG.ui.explorer.title;
 document.querySelector(".subtitle").textContent = CONFIG.ui.explorer.subtitle;
