@@ -80,11 +80,10 @@ document.getElementById("backToChallengeBtn").textContent = CONFIG.ui.exam.back;
 document.getElementById("nextQuestionBtn").textContent = CONFIG.ui.exam.nextQuestion;
 GameExplorer.init();
 GameChallenge.init();
+GameExam.init();
 const level1=document.getElementById("level1");
 const level2=document.getElementById('level2');
-const level3=document.getElementById('level3');
 const startChallengeBtn=document.getElementById('startChallengeBtn');
-const startExamBtn=document.getElementById('startExamBtn');
 const backToExploreBtn=document.getElementById('backToExploreBtn');
 
 document.addEventListener("click", event => {
@@ -95,10 +94,5 @@ document.addEventListener("click", event => {
   GameAudio.playExplorer(button.dataset.part);
 });
 
-const examQuestions=CONFIG.exam.questions;let qi=0,score=0,answered=false;
-function loadQuestion(){answered=false;nextQuestionBtn.style.display='none';const q=examQuestions[qi];examProgressText.textContent=CONFIG.ui.exam.progressFormat.replace("{current}",qi+1).replace("{total}",examQuestions.length);examProgressFill.style.width=`${(qi+1)/examQuestions.length*100}%`;examQuestion.textContent=q.q;examFeedback.textContent='';examOptions.innerHTML='';[...q.o].sort(()=>Math.random()-.5).forEach(o=>{const b=document.createElement('button');b.className='exam-option';b.textContent=o;b.onclick=()=>{if(answered)return;answered=true;document.querySelectorAll('.exam-option').forEach(x=>x.disabled=true);if(o===q.a){score++;b.classList.add('correct');examFeedback.textContent=CONFIG.ui.exam.correctFeedback;GameAudio.playExamSuccess()}else{b.classList.add('incorrect');examFeedback.textContent=CONFIG.ui.exam.incorrectFeedback.replace("{answer}",q.a);GameAudio.playExamWrong()}nextQuestionBtn.style.display='inline-block'};examOptions.appendChild(b)})}
 startChallengeBtn.onclick=()=>{level1.hidden=true;level2.hidden=false;GameAudio.stopExplorer();GameExplorer.hideHighlight();document.querySelectorAll('.connector-line').forEach(line => line.classList.remove('active'));document.querySelectorAll('.part-btn').forEach(button => button.classList.remove('active'));GameChallenge.start()};
 backToExploreBtn.onclick=()=>{GameChallenge.cleanup();level2.hidden=true;level1.hidden=false};
-startExamBtn.onclick=()=>{GameChallenge.cleanup();level2.hidden=true;level3.hidden=false;GameAudio.stopExplorer();GameAudio.stopChallenge();GameAudio.stopChallengeCompletion();GameExplorer.hideHighlight();GameChallenge.hideHighlight();qi=0;score=0;loadQuestion()};
-backToChallengeBtn.onclick=()=>{GameAudio.stopExam();level3.hidden=true;level2.hidden=false};
-nextQuestionBtn.onclick=()=>{qi++;if(qi<examQuestions.length)loadQuestion();else document.querySelector('.exam-container').innerHTML=`<div class="certificate"><h1>🏆 ${CONFIG.ui.certificate.title}</h1><h2>${CONFIG.ui.certificate.courseTitle}</h2><p>${CONFIG.ui.certificate.description}</p><h3>${CONFIG.ui.certificate.scoreLabel} ${score}/${examQuestions.length}</h3><p class="certificate-student">${CONFIG.ui.certificate.studentName}</p><button class="certificate-print" onclick="window.print()">${CONFIG.ui.certificate.printButton}</button></div>`};
