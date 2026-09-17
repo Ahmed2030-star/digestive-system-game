@@ -54,33 +54,42 @@ function validateGameConfig(config) {
 }
 
 const CONFIG = window.GAME_CONFIG;
-const configErrors = validateGameConfig(CONFIG);
-if (configErrors.length) {
-  configErrors.forEach(error => console.error(`GAME_CONFIG validation error: ${error}`));
-  throw new Error("GAME_CONFIG validation failed.");
+
+function applyUiText() {
+  document.title = CONFIG.game.title;
+  document.querySelector("header h1").textContent = CONFIG.ui.explorer.title;
+  document.querySelector(".subtitle").textContent = CONFIG.ui.explorer.subtitle;
+  document.getElementById("startChallengeBtn").textContent = CONFIG.ui.explorer.startChallenge;
+  document.querySelector("#level2 h2").textContent = CONFIG.ui.challenge.title;
+  document.querySelector("#level2 > p").textContent = CONFIG.ui.challenge.instructions;
+  document.getElementById("checkAnswersBtn").textContent = CONFIG.ui.challenge.checkAnswers;
+  document.getElementById("resetIncorrectBtn").textContent = CONFIG.ui.challenge.resetIncorrect;
+  document.getElementById("resetAllBtn").textContent = CONFIG.ui.challenge.resetAll;
+  document.getElementById("startExamBtn").textContent = CONFIG.ui.challenge.startExam;
+  document.getElementById("backToExploreBtn").textContent = CONFIG.ui.challenge.back;
+  document.querySelector("#winTitle").textContent = CONFIG.ui.challenge.congratulations;
+  document.querySelector("#winModal .win-box p").textContent = CONFIG.ui.challenge.completionMessage;
+  document.getElementById("playAgainBtn").textContent = CONFIG.ui.challenge.playAgain;
+  document.getElementById("closeModalBtn").textContent = CONFIG.ui.challenge.close;
+  document.querySelector("#level3 h2").textContent = CONFIG.ui.exam.title;
+  document.getElementById("backToChallengeBtn").textContent = CONFIG.ui.exam.back;
+  document.getElementById("nextQuestionBtn").textContent = CONFIG.ui.exam.nextQuestion;
 }
-console.log("GAME_CONFIG validation passed.");
-const PARTS = CONFIG.parts;
-document.querySelector("header h1").textContent = CONFIG.ui.explorer.title;
-document.querySelector(".subtitle").textContent = CONFIG.ui.explorer.subtitle;
-document.getElementById("startChallengeBtn").textContent = CONFIG.ui.explorer.startChallenge;
-document.querySelector("#level2 h2").textContent = CONFIG.ui.challenge.title;
-document.querySelector("#level2 > p").textContent = CONFIG.ui.challenge.instructions;
-document.getElementById("checkAnswersBtn").textContent = CONFIG.ui.challenge.checkAnswers;
-document.getElementById("resetIncorrectBtn").textContent = CONFIG.ui.challenge.resetIncorrect;
-document.getElementById("resetAllBtn").textContent = CONFIG.ui.challenge.resetAll;
-document.getElementById("startExamBtn").textContent = CONFIG.ui.challenge.startExam;
-document.getElementById("backToExploreBtn").textContent = CONFIG.ui.challenge.back;
-document.querySelector("#winTitle").textContent = CONFIG.ui.challenge.congratulations;
-document.querySelector("#winModal .win-box p").textContent = CONFIG.ui.challenge.completionMessage;
-document.getElementById("playAgainBtn").textContent = CONFIG.ui.challenge.playAgain;
-document.getElementById("closeModalBtn").textContent = CONFIG.ui.challenge.close;
-document.querySelector("#level3 h2").textContent = CONFIG.ui.exam.title;
-document.getElementById("backToChallengeBtn").textContent = CONFIG.ui.exam.back;
-document.getElementById("nextQuestionBtn").textContent = CONFIG.ui.exam.nextQuestion;
-GameExplorer.init();
-GameChallenge.init();
-GameExam.init();
+
+function initializeGame() {
+  const configErrors = validateGameConfig(CONFIG);
+  if (configErrors.length) {
+    configErrors.forEach(error => console.error(`GAME_CONFIG validation error: ${error}`));
+    throw new Error("GAME_CONFIG validation failed.");
+  }
+  console.log("GAME_CONFIG validation passed.");
+  applyUiText();
+  GameExplorer.init();
+  GameChallenge.init();
+  GameExam.init();
+}
+
+initializeGame();
 const level1=document.getElementById("level1");
 const level2=document.getElementById('level2');
 const startChallengeBtn=document.getElementById('startChallengeBtn');
