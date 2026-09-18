@@ -1055,5 +1055,98 @@ Use this sequence:
 11. Push
 12. Test GitHub Pages
 ```
+---
+
+## 31. Explorer Guided Tour
+
+Explorer Mode includes an optional Guided Tour controlled from
+`game-config.js`.
+
+Example configuration:
+
+```javascript
+explorer: {
+  guidedTour: {
+    enabled: true,
+    durationPerPart: 3500,
+    playAudio: true
+  }
+}
+```
+
+### Guided Tour settings
+
+- `enabled`: Shows or hides the Guided Tour button.
+- `durationPerPart`: Sets the display time for each part in milliseconds.
+- `playAudio`: Enables or disables pronunciation audio during the tour.
+
+### Guided Tour behavior
+
+The Guided Tour:
+
+1. Follows the configured parts in their existing order.
+2. Activates the corresponding Explorer button.
+3. Shows the related Explorer Highlight.
+4. Activates the related connector line.
+5. Displays the configured hint.
+6. Plays pronunciation audio when `playAudio` is enabled.
+7. Changes the button text to `■ Stop Tour` while running.
+8. Stops immediately when the Stop Tour button is selected.
+9. Stops when the learner manually interacts with a part.
+10. Stops before entering Challenge Mode.
+11. Restarts from the first configured part after completion.
+
+### Guided Tour validation
+
+Confirm:
+
+- [ ] The tour begins with the first configured part.
+- [ ] All configured parts appear in order.
+- [ ] Each Highlight matches the selected part.
+- [ ] Each connector matches the selected part.
+- [ ] Each hint is displayed correctly.
+- [ ] Audio plays only when enabled.
+- [ ] Stop Tour stops the sequence immediately.
+- [ ] Manual interaction stops the tour.
+- [ ] Start Challenge stops the tour.
+- [ ] Returning to Explorer allows the tour to restart.
+
+---
+
+## 32. Challenge Single-Label Slot Behavior
+
+Every Challenge answer slot accepts exactly one label.
+
+When a new label is placed in an occupied slot:
+
+1. The previous label returns to the Word Bank.
+2. The previous audio control is removed.
+3. The new label replaces the previous label.
+4. The slot keeps its visible number.
+5. The slot contains no more than one audio button.
+6. Previous evaluation classes are cleared.
+
+A configured part must never exist:
+
+- In two answer slots at the same time.
+- In an answer slot and the Word Bank at the same time.
+- More than once inside the Word Bank.
+
+### Challenge replacement tests
+
+Confirm:
+
+- [ ] A label can be placed in an empty slot.
+- [ ] A new label replaces the existing slot label.
+- [ ] The replaced label returns to the Word Bank exactly once.
+- [ ] Placing all labels sequentially in one slot leaves only the last label.
+- [ ] Moving a label between slots empties the previous slot.
+- [ ] Dropping the same label into the same slot does not duplicate it.
+- [ ] Each filled slot contains no more than one audio button.
+- [ ] Check Answers evaluates the current label only.
+- [ ] RESET INCORRECT returns incorrect labels exactly once.
+- [ ] Reset All restores all configured labels exactly once.
+
+---
 
 Always keep a stable tagged release before major engine changes.
