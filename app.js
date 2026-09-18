@@ -54,6 +54,29 @@ function validateGameConfig(config) {
     });
   }
 
+  const review = exam?.review;
+  const reviewLabels = [
+    "title", "scoreLabel", "correctLabel", "incorrectLabel", "accuracyLabel",
+    "performanceLabel", "incorrectSectionTitle", "allCorrectMessage",
+    "yourAnswerLabel", "correctAnswerLabel", "explanationLabel",
+    "viewCertificateButton", "retryExamButton"
+  ];
+  addMissing(typeof review?.enabled === "boolean", "GAME_CONFIG.exam.review.enabled");
+  reviewLabels.forEach(label => {
+    addMissing(typeof review?.[label] === "string" && review[label].trim().length > 0, `GAME_CONFIG.exam.review.${label}`);
+  });
+  addMissing(Array.isArray(review?.levels) && review.levels.length > 0, "GAME_CONFIG.exam.review.levels");
+  if (Array.isArray(review?.levels)) {
+    review.levels.forEach((level, index) => {
+      const path = `GAME_CONFIG.exam.review.levels[${index}]`;
+      addMissing(typeof level?.minimum === "number" && level.minimum >= 0 && level.minimum <= 100, `${path}.minimum`);
+      addMissing(typeof level?.label === "string" && level.label.trim().length > 0, `${path}.label`);
+      if (index > 0 && typeof level?.minimum === "number" && typeof review.levels[index - 1]?.minimum === "number") {
+        addMissing(level.minimum <= review.levels[index - 1].minimum, `${path}.minimum ordered highest to lowest`);
+      }
+    });
+  }
+
   const certificate = config.certificate;
   addMissing(certificate?.title, "GAME_CONFIG.certificate.title");
   addMissing(certificate?.gameTitle, "GAME_CONFIG.certificate.gameTitle");
