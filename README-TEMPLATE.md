@@ -1240,5 +1240,79 @@ Confirm:
 - [ ] No duplicate labels appear.
 
 ---
+---
+
+## 34. Explorer Progress Tracking
+
+Explorer Mode can track which configured parts the learner has explored.
+
+The progress indicator displays the number of explored parts, for example:
+
+```text
+Explored: 3 of 6 parts
+```
+
+When all configured parts have been explored, it displays:
+
+```text
+Explored: 6 of 6 parts · All parts explored!
+```
+
+### Configuration
+
+Configure progress tracking inside the existing Explorer configuration in
+`game-config.js`:
+
+```javascript
+progressTracking: {
+  enabled: true,
+  label: "Explored",
+  completedMessage: "All parts explored!",
+  persist: false
+}
+```
+
+### Configuration properties
+
+- `enabled`: Shows or hides the Explorer progress indicator.
+- `label`: Controls the text displayed before the progress count.
+- `completedMessage`: Appears when all configured parts are explored.
+- `persist`: Controls whether progress is stored between page reloads.
+
+For the current template version, `persist` defaults to `false`.
+
+### Progress behavior
+
+A configured part becomes explored when the learner:
+
+1. Clicks or activates the part button.
+2. Uses `Enter` or `Space` on the part button.
+3. Reaches the part during Guided Tour.
+
+Hovering over a part does not permanently mark the part as explored.
+
+Each configured part is counted only once.
+
+Progress remains available when moving to Challenge Mode and returning to
+Explorer Mode during the same page session.
+
+### Progress validation
+
+Confirm:
+
+- [ ] Initial progress displays `Explored: 0 of 6 parts`.
+- [ ] Hover does not increase the progress count.
+- [ ] Clicking a part increases the count by one.
+- [ ] Clicking the same part again does not increase the count.
+- [ ] Every explored part displays a visible check mark.
+- [ ] Guided Tour marks each visited part as explored.
+- [ ] Completing Guided Tour reaches the configured total.
+- [ ] The completion message appears with the numeric count.
+- [ ] Progress remains after visiting Challenge and returning to Explorer.
+- [ ] Disabling progress tracking hides the progress indicator.
+- [ ] Explorer audio, Highlights, connectors, and Guided Tour still work.
+- [ ] The progress indicator remains readable on mobile screens.
+
+---
 
 Always keep a stable tagged release before major engine changes.
