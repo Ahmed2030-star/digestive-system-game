@@ -39,14 +39,6 @@ window.GAME_CONFIG = {
       nextQuestion: "Next Question",
       back: "Back"
     },
-    certificate: {
-      title: "Certificate of Excellence",
-      courseTitle: "Digestive System Explorer",
-      description: "This certificate is proudly awarded for successfully completing the Level 3 Exam.",
-      scoreLabel: "Score:",
-      studentName: "Ahmed Sayed Nasary",
-      printButton: "🖨 Print Certificate"
-    }
   },
 
   parts: [
@@ -155,10 +147,12 @@ window.GAME_CONFIG = {
   certificate: {
     title: "Certificate of Excellence",
     gameTitle: "Digestive System Explorer",
-    description: "This certificate is proudly awarded for successfully completing the Level 3 Exam.",
+    description:
+      "This certificate is proudly awarded for successfully completing the Level 3 Exam.",
     studentName: "Ahmed Sayed Nasary",
     studentNameEnabled: true,
     minimumPassingScore: 0,
-    dateEnabled: false
+    dateEnabled: false,
+    printButton: "🖨 Print Certificate"
   }
 };

@@ -46,10 +46,15 @@ function validateGameConfig(config) {
     });
   }
 
-  const certificate = config.ui?.certificate;
-  addMissing(certificate?.title, "GAME_CONFIG.ui.certificate.title");
-  addMissing(certificate?.courseTitle, "GAME_CONFIG.ui.certificate.courseTitle");
-  addMissing(certificate?.description, "GAME_CONFIG.ui.certificate.description");
+  const certificate = config.certificate;
+  addMissing(certificate?.title, "GAME_CONFIG.certificate.title");
+  addMissing(certificate?.gameTitle, "GAME_CONFIG.certificate.gameTitle");
+  addMissing(certificate?.description, "GAME_CONFIG.certificate.description");
+  addMissing(certificate?.studentName, "GAME_CONFIG.certificate.studentName");
+  addMissing(typeof certificate?.studentNameEnabled === "boolean", "GAME_CONFIG.certificate.studentNameEnabled");
+  addMissing(Number.isFinite(certificate?.minimumPassingScore), "GAME_CONFIG.certificate.minimumPassingScore");
+  addMissing(typeof certificate?.dateEnabled === "boolean", "GAME_CONFIG.certificate.dateEnabled");
+  addMissing(certificate?.printButton, "GAME_CONFIG.certificate.printButton");
   return errors;
 }
 

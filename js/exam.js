@@ -76,8 +76,16 @@
   }
 
   function showCertificate() {
-    const certificate = window.GAME_CONFIG.ui.certificate;
-    document.querySelector(".exam-container").innerHTML = `<div class="certificate"><h1>🏆 ${certificate.title}</h1><h2>${certificate.courseTitle}</h2><p>${certificate.description}</p><h3>${certificate.scoreLabel} ${examScore}/${examQuestions.length}</h3><p class="certificate-student">${certificate.studentName}</p><button class="certificate-print" onclick="window.print()">${certificate.printButton}</button></div>`;
+    const CONFIG = window.GAME_CONFIG;
+    const certificate = CONFIG.certificate;
+    const scoreStatus = examScore >= certificate.minimumPassingScore ? "" : " (Not Passed)";
+    const studentName = certificate.studentNameEnabled
+      ? `<p class="certificate-student">${certificate.studentName}</p>`
+      : "";
+    const date = certificate.dateEnabled
+      ? `<p>${new Date().toLocaleDateString()}</p>`
+      : "";
+    document.querySelector(".exam-container").innerHTML = `<div class="certificate"><h1>🏆 ${certificate.title}</h1><h2>${certificate.gameTitle}</h2><p>${certificate.description}</p><h3>Score: ${examScore}/${examQuestions.length}${scoreStatus}</h3>${studentName}${date}<button class="certificate-print" onclick="window.print()">${certificate.printButton}</button></div>`;
   }
 
   function init() {
