@@ -145,6 +145,13 @@ window.GAME_CONFIG = {
 
   challenge: {
     completionSound: "assets/audio/digestive-system/challenge/completion-sound.mp3",
+    hints: {
+      enabled: true,
+      duration: 2500,
+      playAudio: true,
+      buttonText: "Show Hint",
+      selectFirstMessage: "Select a label first."
+    },
     leftParts: ["mouth", "esophagus", "stomach"],
     rightParts: ["small-intestine", "large-intestine", "anus"],
     numberOfParts: 6,

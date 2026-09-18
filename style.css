@@ -173,6 +173,38 @@
   align-items: center;
 }
 
+#level2 .challenge-hint-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 18px auto;
+  min-height: 44px;
+}
+
+#level2 .challenge-hint-btn {
+  min-width: 88px;
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 2px solid var(--primary);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--primary);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+#level2 .challenge-hint-btn:focus-visible {
+  outline: 4px solid rgba(33, 150, 243, .45);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #level2 .challenge-hint-btn {
+    transition: none;
+  }
+}
+
 .challenge-diagram-card {
   grid-column: 2;
   grid-row: 1;
@@ -916,4 +948,75 @@
   background: transparent;
   justify-self: center;
   align-self: center;
+}
+
+/* =========================================
+   CHALLENGE: subtle Show Hint interaction
+   ========================================= */
+
+#level2 .challenge-hint-btn {
+  min-width: 120px;
+  min-height: 44px;
+
+  transform: scale(1);
+
+  border: 2px solid #2185d0;
+  border-radius: 10px;
+
+  background: #ffffff;
+  color: #0874cc;
+
+  box-shadow:
+    0 2px 5px rgba(33, 133, 208, 0.16);
+
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+/* Subtle selected state */
+#level2 .challenge-hint-btn:hover,
+#level2 .challenge-hint-btn.hint-ready {
+  transform: scale(1.025);
+
+  border-color: #2185d0;
+  background: #eef7ff;
+
+  box-shadow:
+    0 0 0 4px rgba(33, 133, 208, 0.18),
+    0 3px 7px rgba(33, 133, 208, 0.16);
+}
+
+/* Subtle press state */
+#level2 .challenge-hint-btn:active {
+  transform: scale(0.98);
+
+  background: #e1f1ff;
+
+  box-shadow:
+    0 0 0 3px rgba(33, 133, 208, 0.15);
+}
+
+/* Keyboard focus */
+#level2 .challenge-hint-btn:focus-visible {
+  outline: none;
+
+  box-shadow:
+    0 0 0 4px rgba(33, 133, 208, 0.25);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #level2 .challenge-hint-btn,
+  #level2 .challenge-hint-btn.hint-ready {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  #level2 .challenge-hint-btn:hover,
+  #level2 .challenge-hint-btn:active,
+  #level2 .challenge-hint-btn.hint-ready {
+    transform: none !important;
+  }
 }
