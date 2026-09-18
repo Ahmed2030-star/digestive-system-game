@@ -36,6 +36,12 @@ function validateGameConfig(config) {
   addMissing(Array.isArray(exam?.questions) && exam.questions.length >= 6, "GAME_CONFIG.exam.questions with at least 6 questions");
   addMissing(exam?.successSound, "GAME_CONFIG.exam.successSound");
   addMissing(exam?.wrongSound, "GAME_CONFIG.exam.wrongSound");
+  const studentEntry = exam?.studentEntry;
+  addMissing(typeof studentEntry?.enabled === "boolean", "GAME_CONFIG.exam.studentEntry.enabled");
+  ["title", "instruction", "label", "placeholder", "beginButton", "backButton", "requiredMessage"].forEach(label => {
+    addMissing(typeof studentEntry?.[label] === "string" && studentEntry[label].trim().length > 0, `GAME_CONFIG.exam.studentEntry.${label}`);
+  });
+  addMissing(Number.isInteger(studentEntry?.maxLength) && studentEntry.maxLength > 0, "GAME_CONFIG.exam.studentEntry.maxLength");
   if (Array.isArray(exam?.questions)) {
     const questionIds = new Set();
     const supportedTypes = new Set(["name", "function", "sequence", "application"]);
@@ -81,7 +87,12 @@ function validateGameConfig(config) {
   addMissing(certificate?.title, "GAME_CONFIG.certificate.title");
   addMissing(certificate?.gameTitle, "GAME_CONFIG.certificate.gameTitle");
   addMissing(certificate?.description, "GAME_CONFIG.certificate.description");
-  addMissing(certificate?.studentName, "GAME_CONFIG.certificate.studentName");
+  const hasStudentName = Object.prototype.hasOwnProperty.call(certificate || {}, "studentName");
+  const studentNameIsString = typeof certificate?.studentName === "string";
+  addMissing(hasStudentName && studentNameIsString, "GAME_CONFIG.certificate.studentName");
+  if (studentEntry?.enabled === false && certificate?.studentNameEnabled === true) {
+    addMissing(studentNameIsString && certificate.studentName.trim().length > 0, "GAME_CONFIG.certificate.studentName fallback");
+  }
   addMissing(typeof certificate?.studentNameEnabled === "boolean", "GAME_CONFIG.certificate.studentNameEnabled");
   addMissing(Number.isFinite(certificate?.minimumPassingScore), "GAME_CONFIG.certificate.minimumPassingScore");
   addMissing(typeof certificate?.dateEnabled === "boolean", "GAME_CONFIG.certificate.dateEnabled");
