@@ -117,7 +117,36 @@
   background: #dc3545;
 }
 
+#level1 .explorer-progress {
+  margin: 18px auto 0;
+  min-height: 24px;
+  text-align: center;
+  color: #245b3b;
+  font-weight: 700;
+}
+
+#level1 .part-btn {
+  min-height: 44px;
+}
+
+#level1 .part-btn.explored {
+  border-color: #4b9b68;
+  background: #e8f6ec;
+  color: #245b3b;
+}
+
+#level1 .part-btn.explored::before {
+  content: "✓";
+  display: inline-block;
+  margin-right: 6px;
+  font-weight: 800;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  #level1 .part-btn {
+    transition: none;
+  }
+
   .guided-tour-btn {
     transition: none;
   }

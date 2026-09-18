@@ -11,6 +11,74 @@ let guidedTourTimeout = null;
 let guidedTourIndex = 0;
 let guidedTourRunning = false;
 let initialized = false;
+const exploredPartIds = new Set();
+let explorerProgress;
+
+function getProgressConfig() {
+  return window.GAME_CONFIG.explorer.progressTracking;
+}
+
+function getProgressStorageKey() {
+  return `explorer-progress-${window.GAME_CONFIG.game.id}`;
+}
+
+function markPartExplored(partId) {
+  if (!getProgressConfig().enabled || !getParts().some(part => part.id === partId)) return;
+  if (exploredPartIds.has(partId)) return;
+  exploredPartIds.add(partId);
+  updateExplorerProgress();
+}
+
+function updateExplorerProgress() {
+  const progressConfig = getProgressConfig();
+  if (!progressConfig.enabled || !explorerProgress) return;
+  const exploredCount = exploredPartIds.size;
+  const totalParts = getParts().length;
+  const progressText = `${progressConfig.label}: ${exploredCount} of ${totalParts} parts`;
+  explorerProgress.textContent = exploredCount === totalParts
+    ? `${progressText} - ${progressConfig.completedMessage}`
+    : progressText;
+  document.querySelectorAll(".part-btn").forEach(button => {
+    const explored = exploredPartIds.has(button.dataset.part);
+    button.classList.toggle("explored", explored);
+    button.setAttribute("aria-pressed", String(explored));
+    const part = getParts().find(item => item.id === button.dataset.part);
+    if (part) button.setAttribute("aria-label", explored ? `${part.name}, explored` : part.name);
+  });
+  if (progressConfig.persist) {
+    localStorage.setItem(getProgressStorageKey(), JSON.stringify([...exploredPartIds]));
+  }
+}
+
+function resetExplorerProgress() {
+  exploredPartIds.clear();
+  if (getProgressConfig().persist) localStorage.removeItem(getProgressStorageKey());
+  updateExplorerProgress();
+}
+
+function restoreExplorerProgress() {
+  const progressConfig = getProgressConfig();
+  if (!progressConfig.enabled || !progressConfig.persist) return;
+  try {
+    const savedIds = JSON.parse(localStorage.getItem(getProgressStorageKey()) || "[]");
+    if (Array.isArray(savedIds)) {
+      savedIds.filter(partId => getParts().some(part => part.id === partId)).forEach(partId => exploredPartIds.add(partId));
+    }
+  } catch (error) {
+    localStorage.removeItem(getProgressStorageKey());
+  }
+}
+
+function createExplorerProgress() {
+  const progressConfig = getProgressConfig();
+  if (!progressConfig.enabled) return;
+  explorerProgress = document.createElement("p");
+  explorerProgress.className = "explorer-progress";
+  explorerProgress.id = "explorerProgress";
+  explorerProgress.setAttribute("role", "status");
+  explorerProgress.setAttribute("aria-live", "polite");
+  document.getElementById("level1").insertBefore(explorerProgress, explorerGrid);
+}
 
 function getParts() {
   return window.GAME_CONFIG.parts;
@@ -82,6 +150,7 @@ function showGuidedTourPart() {
     return;
   }
 
+  markPartExplored(part.id);
   showPart(part);
   const button = document.querySelector(`.part-btn[data-part="${part.id}"]`);
   explorerTooltip.textContent = part.hint;
@@ -146,8 +215,11 @@ function makeButton(part) {
   button.onmouseleave = reset;
   button.onclick = event => {
     stopGuidedTour();
+    markPartExplored(part.id);
     showPart(part, event);
   };
+  button.setAttribute("aria-pressed", "false");
+  button.setAttribute("aria-label", part.name);
   return button;
 }
 
@@ -196,8 +268,11 @@ function init() {
   explorerTooltip = document.getElementById("partTooltip");
   leftParts.innerHTML = "";
   rightParts.innerHTML = "";
+  createExplorerProgress();
+  restoreExplorerProgress();
   getParts().slice(0, 3).forEach(part => leftParts.appendChild(makeButton(part)));
   getParts().slice(3).forEach(part => rightParts.appendChild(makeButton(part)));
+  updateExplorerProgress();
   if (window.GAME_CONFIG.explorer.guidedTour.enabled) createGuidedTourButton();
   createConnectorLines();
   window.addEventListener("resize", updateConnectors);
