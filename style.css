@@ -113,6 +113,21 @@
   text-align: center;
 }
 
+.guided-tour-btn[aria-pressed="true"] {
+  background: #dc3545;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .guided-tour-btn {
+    transition: none;
+  }
+
+  .guided-tour-btn:hover,
+  .guided-tour-btn:active {
+    transform: none;
+  }
+}
+
 /* Connector lines are hidden on small screens */
 @media (max-width: 850px) {
   .connector-layer {

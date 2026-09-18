@@ -6,6 +6,10 @@ let connectorLines;
 let leftParts;
 let rightParts;
 let explorerTooltip;
+let guidedTourButton;
+let guidedTourTimeout = null;
+let guidedTourIndex = 0;
+let guidedTourRunning = false;
 let initialized = false;
 
 function getParts() {
@@ -48,6 +52,77 @@ function showPart(part, event) {
   }
 }
 
+function updateGuidedTourButton() {
+  const labels = window.GAME_CONFIG.ui.explorer.guidedTour;
+  if (!guidedTourButton) return;
+  guidedTourButton.textContent = guidedTourRunning ? labels.stop : labels.start;
+  guidedTourButton.setAttribute("aria-label", guidedTourRunning ? labels.stopAriaLabel : labels.startAriaLabel);
+  guidedTourButton.setAttribute("aria-pressed", String(guidedTourRunning));
+}
+
+function stopGuidedTour() {
+  if (guidedTourTimeout !== null) {
+    clearTimeout(guidedTourTimeout);
+    guidedTourTimeout = null;
+  }
+  if (guidedTourRunning) GameAudio.stopExplorer();
+  guidedTourRunning = false;
+  updateGuidedTourButton();
+}
+
+function showGuidedTourPart() {
+  if (!guidedTourRunning || document.getElementById("level1").hidden) {
+    stopGuidedTour();
+    return;
+  }
+
+  const part = getParts()[guidedTourIndex];
+  if (!part) {
+    stopGuidedTour();
+    return;
+  }
+
+  showPart(part);
+  const button = document.querySelector(`.part-btn[data-part="${part.id}"]`);
+  explorerTooltip.textContent = part.hint;
+  if (button) {
+    const buttonRect = button.getBoundingClientRect();
+    explorerTooltip.style.left = (buttonRect.right + 15) + "px";
+    explorerTooltip.style.top = (buttonRect.top + buttonRect.height / 2) + "px";
+  }
+  explorerTooltip.classList.add("show");
+  if (window.GAME_CONFIG.explorer.guidedTour.playAudio) GameAudio.playExplorer(part.id);
+  guidedTourTimeout = setTimeout(() => {
+    guidedTourIndex++;
+    if (guidedTourIndex >= getParts().length) {
+      stopGuidedTour();
+      return;
+    }
+    showGuidedTourPart();
+  }, Math.max(0, window.GAME_CONFIG.explorer.guidedTour.durationPerPart));
+}
+
+function startGuidedTour() {
+  if (!window.GAME_CONFIG.explorer.guidedTour.enabled || document.getElementById("level1").hidden) return;
+  stopGuidedTour();
+  guidedTourIndex = 0;
+  guidedTourRunning = true;
+  updateGuidedTourButton();
+  showGuidedTourPart();
+}
+
+function createGuidedTourButton() {
+  guidedTourButton = document.createElement("button");
+  guidedTourButton.type = "button";
+  guidedTourButton.className = "primary-btn guided-tour-btn";
+  guidedTourButton.onclick = () => {
+    if (guidedTourRunning) stopGuidedTour();
+    else startGuidedTour();
+  };
+  updateGuidedTourButton();
+  document.getElementById("level1").appendChild(guidedTourButton);
+}
+
 function reset() {
   const parts = getParts();
   showPart(parts[0]);
@@ -60,13 +135,19 @@ function makeButton(part) {
   button.className = "part-btn audio-btn";
   button.dataset.part = part.id;
   button.textContent = part.name;
-  button.onmouseenter = event => showPart(part, event);
+  button.onmouseenter = event => {
+    stopGuidedTour();
+    showPart(part, event);
+  };
   button.onmousemove = event => {
     explorerTooltip.style.left = (event.clientX + 15) + "px";
     explorerTooltip.style.top = (event.clientY + 15) + "px";
   };
   button.onmouseleave = reset;
-  button.onclick = event => showPart(part, event);
+  button.onclick = event => {
+    stopGuidedTour();
+    showPart(part, event);
+  };
   return button;
 }
 
@@ -117,16 +198,22 @@ function init() {
   rightParts.innerHTML = "";
   getParts().slice(0, 3).forEach(part => leftParts.appendChild(makeButton(part)));
   getParts().slice(3).forEach(part => rightParts.appendChild(makeButton(part)));
+  if (window.GAME_CONFIG.explorer.guidedTour.enabled) createGuidedTourButton();
   createConnectorLines();
   window.addEventListener("resize", updateConnectors);
   image.addEventListener("load", updateConnectors);
   highlightImage.addEventListener("load", updateConnectors);
+  new MutationObserver(() => {
+    if (document.getElementById("level1").hidden) stopGuidedTour();
+  }).observe(document.getElementById("level1"), {attributes: true, attributeFilter: ["hidden"]});
   reset();
 }
 
 window.GameExplorer = {
   init,
   reset,
+  startGuidedTour,
+  stopGuidedTour,
   hideHighlight,
   updateConnectors
 };

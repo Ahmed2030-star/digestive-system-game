@@ -9,11 +9,25 @@ window.GAME_CONFIG = {
     language: "en-US"
   },
 
+  explorer: {
+    guidedTour: {
+      enabled: true,
+      durationPerPart: 3500,
+      playAudio: true
+    }
+  },
+
   ui: {
     explorer: {
       title: "Digestive System Explorer",
       subtitle: "Hover over a part name to highlight it.",
-      startChallenge: "Start Challenge"
+      startChallenge: "Start Challenge",
+      guidedTour: {
+        start: "▶ Guided Tour",
+        stop: "■ Stop Tour",
+        startAriaLabel: "Start guided tour",
+        stopAriaLabel: "Stop guided tour"
+      }
     },
     challenge: {
       title: "Challenge Mode",
