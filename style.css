@@ -269,6 +269,22 @@
   cursor: pointer;
 }
 
+#level2 .drag-word {
+  cursor: pointer;
+}
+
+#level2 .drag-word.selected-for-placement {
+  background: #174f87;
+  outline: 4px solid rgba(25, 118, 210, .28);
+  transform: translateY(-2px) scale(1.03);
+}
+
+#level2 .drag-word:focus-visible,
+#level2 .answer-slot:focus-visible {
+  outline: 4px solid rgba(33, 150, 243, .45);
+  outline-offset: 3px;
+}
+
 @media (max-width: 850px) {
   .challenge-layout {
     display: flex;

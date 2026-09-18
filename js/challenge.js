@@ -18,6 +18,7 @@
   let challengeConnectorLines;
   let challengeTooltip;
   let challengeDragging = false;
+  let selectedPartId = null;
   let winModal;
   let initialized = false;
 
@@ -96,6 +97,30 @@
     document.querySelector(`#level2 .drag-word[data-part="${partId}"]`)?.classList.remove("used");
   }
 
+  function clearSelectedPart() {
+    selectedPartId = null;
+    wordBank?.querySelectorAll(".drag-word").forEach(word => {
+      word.classList.remove("selected-for-placement");
+      word.setAttribute("aria-pressed", "false");
+    });
+    if (challengeFeedback) challengeFeedback.textContent = window.GAME_CONFIG.ui.challenge.instructions;
+  }
+
+  function selectPartForPlacement(partId, word) {
+    if (selectedPartId === partId) {
+      clearSelectedPart();
+      return;
+    }
+    wordBank.querySelectorAll(".drag-word").forEach(item => {
+      item.classList.remove("selected-for-placement");
+      item.setAttribute("aria-pressed", "false");
+    });
+    selectedPartId = partId;
+    word.classList.add("selected-for-placement");
+    word.setAttribute("aria-pressed", "true");
+    challengeFeedback.textContent = window.GAME_CONFIG.ui.challenge.tapToPlaceInstruction;
+  }
+
   function placePartInSlot(partId, slot) {
     const item = challengeParts.find(part => part.id === partId);
     if (!item) return;
@@ -120,10 +145,19 @@
     document.querySelector(`#level2 .drag-word[data-part="${partId}"]`)?.classList.add("used");
   }
 
+  function placeSelectedPartInSlot(slot) {
+    if (!selectedPartId) return;
+    placePartInSlot(selectedPartId, slot);
+    clearSelectedPart();
+  }
+
   function makeChallengeSlot(part, index) {
     const slot = document.createElement("div");
     slot.className = "answer-slot";
     slot.dataset.part = part.id;
+    slot.tabIndex = 0;
+    slot.setAttribute("role", "button");
+    slot.setAttribute("aria-label", `Answer slot ${index + 1}`);
     slot.innerHTML = `<strong>${index + 1}</strong><span>${window.GAME_CONFIG.ui.challenge.emptySlot}</span>`;
     slot.ondragover = event => event.preventDefault();
     slot.ondragenter = () => {
@@ -145,12 +179,23 @@
       event.preventDefault();
       const id = event.dataTransfer.getData("text/plain");
       placePartInSlot(id, slot);
+      clearSelectedPart();
       clearChallengeDragState();
+    };
+    slot.onclick = event => {
+      if (event.target.closest(".audio-btn")) return;
+      placeSelectedPartInSlot(slot);
+    };
+    slot.onkeydown = event => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      event.preventDefault();
+      placeSelectedPartInSlot(slot);
     };
     return slot;
   }
 
   function buildChallenge() {
+    clearSelectedPart();
     wordBank.innerHTML = "";
     challengeLeftSlots.innerHTML = "";
     challengeRightSlots.innerHTML = "";
@@ -167,6 +212,9 @@
       const word = document.createElement("div");
       word.className = "drag-word";
       word.draggable = true;
+      word.tabIndex = 0;
+      word.setAttribute("role", "button");
+      word.setAttribute("aria-pressed", "false");
       word.dataset.part = part.id;
       word.textContent = part.name;
       word.onmouseenter = event => {
@@ -188,6 +236,12 @@
         setChallengeConnector(part.id);
       };
       word.ondragend = clearChallengeDragState;
+      word.onclick = () => selectPartForPlacement(part.id, word);
+      word.onkeydown = event => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        event.preventDefault();
+        selectPartForPlacement(part.id, word);
+      };
       wordBank.appendChild(word);
     });
     challengeLeftParts.forEach((part, index) => challengeLeftSlots.appendChild(makeChallengeSlot(part, index)));

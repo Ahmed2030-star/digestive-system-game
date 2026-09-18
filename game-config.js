@@ -32,6 +32,7 @@ window.GAME_CONFIG = {
     challenge: {
       title: "Challenge Mode",
       instructions: "Drag each name to its correct numbered position.",
+      tapToPlaceInstruction: "Now choose an answer slot.",
       emptySlot: "Drop the name here",
       checkAnswers: "Check Answers",
       resetIncorrect: "RESET INCORRECT",
