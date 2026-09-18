@@ -162,6 +162,17 @@ window.GAME_CONFIG = {
     successSound: "assets/audio/digestive-system/exam/success.mp3",
     wrongSound: "assets/audio/digestive-system/exam/wrong.mp3",
     questionsPerAttempt: 24,
+    studentEntry: {
+      enabled: true,
+      title: "Enter Your Name",
+      instruction: "Enter your name before starting the Exam.",
+      label: "Student name",
+      placeholder: "Type your name",
+      beginButton: "Begin Exam",
+      backButton: "Back to Challenge",
+      requiredMessage: "Please enter your name.",
+      maxLength: 50
+    },
     questions: [
       {
         id: "name-digestion-01",
@@ -391,14 +402,14 @@ window.GAME_CONFIG = {
   },
 
   certificate: {
-    title: "Certificate of Excellence",
-    gameTitle: "Digestive System Explorer",
-    description:
-      "This certificate is proudly awarded for successfully completing the Level 3 Exam.",
-    studentName: "Ahmed Sayed Nasary",
-    studentNameEnabled: true,
-    minimumPassingScore: 0,
-    dateEnabled: false,
-    printButton: "🖨 Print Certificate"
-  }
+  title: "Certificate of Excellence",
+  gameTitle: "Digestive System Explorer",
+  description:
+    "This certificate is proudly awarded by Mr Ahmed Sayed Nasary for successfully completing the Level 3 Exam.",
+  studentName: "",
+  studentNameEnabled: true,
+  minimumPassingScore: 0,
+  dateEnabled: true,
+  printButton: "🖨 Print Certificate"
+}
 };

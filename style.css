@@ -1014,6 +1014,89 @@
   }
 }
 
+#level3 .exam-student-entry {
+  max-width: 620px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+#level3 .exam-student-entry h2 {
+  text-align: center;
+}
+
+#level3 .exam-student-entry > p {
+  margin: 0 0 28px;
+  color: #5b6878;
+}
+
+#level3 .exam-student-form {
+  display: grid;
+  gap: 12px;
+  text-align: left;
+}
+
+#level3 .exam-student-label {
+  font-weight: 700;
+}
+
+#level3 .exam-student-input {
+  width: 100%;
+  min-height: 52px;
+  padding: 12px 14px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  font: inherit;
+}
+
+#level3 .exam-student-input:focus {
+  border-color: var(--primary);
+  outline: 4px solid rgba(33, 150, 243, .2);
+}
+
+#level3 .exam-student-input[aria-invalid="true"] {
+  border-color: #dc3545;
+}
+
+#level3 .exam-student-error {
+  min-height: 24px;
+  margin: 0;
+  color: #dc3545;
+  font-weight: 700;
+}
+
+#level3 .exam-student-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+#level3 .exam-student-actions button {
+  min-height: 46px;
+  padding: 11px 18px;
+  border: 0;
+  border-radius: 10px;
+  background: #28a745;
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+#level3 .exam-student-actions .exam-student-back {
+  background: #6c757d;
+}
+
+@media (max-width: 600px) {
+  #level3 .exam-student-actions {
+    flex-direction: column-reverse;
+  }
+
+  #level3 .exam-student-actions button {
+    width: 100%;
+  }
+}
+
 /* =========================================
    EXAM CERTIFICATE
    ========================================= */

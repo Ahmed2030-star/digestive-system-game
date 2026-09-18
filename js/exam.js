@@ -16,6 +16,7 @@
   let examFeedback;
   let examMarkup;
   let examContainer;
+  let currentStudentName = "";
   let initialized = false;
 
   function cacheElements() {
@@ -86,10 +87,69 @@
     GameAudio.stopChallengeCompletion();
     GameExplorer.hideHighlight();
     GameChallenge.hideHighlight();
+    currentStudentName = "";
+    cleanup();
+    restoreExamMarkup();
+    if (window.GAME_CONFIG.exam.studentEntry.enabled) {
+      showStudentEntry();
+      return;
+    }
+    currentStudentName = window.GAME_CONFIG.certificate.studentName;
+    beginExam();
+  }
+
+  function beginExam() {
     examQuestionIndex = 0;
     examScore = 0;
     examAnswerHistory = [];
     loadQuestion();
+  }
+
+  function restoreExamMarkup() {
+    examContainer.innerHTML = examMarkup;
+    cacheElements();
+    bindExamControls();
+  }
+
+  function restartExamWithCurrentStudent() {
+    GameAudio.stopExam();
+    restoreExamMarkup();
+    beginExam();
+  }
+
+  function showStudentEntry() {
+    const entry = window.GAME_CONFIG.exam.studentEntry;
+    examContainer.innerHTML = `<section class="exam-student-entry" aria-labelledby="examStudentEntryTitle"><h2 id="examStudentEntryTitle">${entry.title}</h2><p>${entry.instruction}</p><form class="exam-student-form"><label class="exam-student-label" for="examStudentName">${entry.label}</label><input class="exam-student-input" id="examStudentName" name="studentName" type="text" placeholder="${entry.placeholder}" maxlength="${entry.maxLength}" autocomplete="name"><p class="exam-student-error" role="alert" aria-live="polite"></p><div class="exam-student-actions"><button type="submit">${entry.beginButton}</button><button type="button" class="exam-student-back">${entry.backButton}</button></div></form></section>`;
+    const form = examContainer.querySelector(".exam-student-form");
+    const input = examContainer.querySelector(".exam-student-input");
+    const error = examContainer.querySelector(".exam-student-error");
+    input.focus();
+    form.onsubmit = event => {
+      event.preventDefault();
+      const studentName = input.value.trim();
+      if (!studentName) {
+        input.setAttribute("aria-invalid", "true");
+        error.textContent = entry.requiredMessage;
+        input.focus();
+        return;
+      }
+      currentStudentName = studentName;
+      restoreExamMarkup();
+      beginExam();
+    };
+    input.oninput = () => {
+      input.removeAttribute("aria-invalid");
+      error.textContent = "";
+    };
+    examContainer.querySelector(".exam-student-back").onclick = backToChallenge;
+  }
+
+  function backToChallenge() {
+    cleanup();
+    currentStudentName = "";
+    restoreExamMarkup();
+    level3.hidden = true;
+    level2.hidden = false;
   }
 
   function reset() {
@@ -109,7 +169,7 @@
     const certificate = CONFIG.certificate;
     const scoreStatus = examScore >= certificate.minimumPassingScore ? "" : " (Not Passed)";
     const studentName = certificate.studentNameEnabled
-      ? `<p class="certificate-student">${certificate.studentName}</p>`
+      ? `<p class="certificate-student">${currentStudentName.trim() || certificate.studentName}</p>`
       : "";
     const date = certificate.dateEnabled
       ? `<p>${new Date().toLocaleDateString()}</p>`
@@ -128,12 +188,7 @@
       : `<p class="exam-review-all-correct">${review.allCorrectMessage}</p>`;
     examContainer.innerHTML = `<section class="exam-review" aria-labelledby="examReviewTitle"><h1 id="examReviewTitle" tabindex="-1">${review.title}</h1><dl class="exam-review-summary">${stat(`${review.scoreLabel}:`, `${examScore}/${examQuestions.length}`)}${stat(review.correctLabel, examScore)}${stat(review.incorrectLabel, incorrectAnswers.length)}${stat(review.accuracyLabel, `${accuracy}%`)}<div class="exam-review-stat exam-review-level"><dt>${review.performanceLabel}</dt><dd>${performance}</dd></div></dl>${incorrectSection}<div class="exam-review-actions"><button type="button" class="exam-review-certificate">${review.viewCertificateButton}</button><button type="button" class="exam-review-retry">${review.retryExamButton}</button></div></section>`;
     examContainer.querySelector(".exam-review-certificate").onclick = showCertificate;
-    examContainer.querySelector(".exam-review-retry").onclick = () => {
-      GameAudio.stopExam();
-      examContainer.innerHTML = examMarkup;
-      cacheElements();
-      start();
-    };
+    examContainer.querySelector(".exam-review-retry").onclick = restartExamWithCurrentStudent;
   }
 
   function init() {
@@ -148,11 +203,11 @@
     examMarkup = examContainer.innerHTML;
     cacheElements();
     startExamButton.onclick = start;
-    backToChallengeButton.onclick = () => {
-      cleanup();
-      level3.hidden = true;
-      level2.hidden = false;
-    };
+    restoreExamMarkup();
+  }
+
+  function bindExamControls() {
+    backToChallengeButton.onclick = backToChallenge;
     nextQuestionButton.onclick = () => {
       examQuestionIndex++;
       if (examQuestionIndex < examQuestions.length) loadQuestion();
