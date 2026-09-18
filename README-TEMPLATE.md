@@ -1563,4 +1563,113 @@ Confirm:
 
 ---
 
+---
+
+## 37. Exam Review and Performance Summary
+
+After the learner answers the final Exam question, the game displays an
+Exam Review screen before the certificate.
+
+### Review flow
+
+```text
+Final Question
+→ Exam Review
+→ View Certificate
+```
+
+### Review summary
+
+The Exam Review displays:
+
+- Score
+- Correct Answers
+- Incorrect Answers
+- Accuracy
+- Performance Level
+
+Accuracy is calculated from the actual Exam question total.
+
+Example:
+
+```text
+Score: 18/24
+Correct Answers: 18
+Incorrect Answers: 6
+Accuracy: 75%
+Performance Level: Very Good
+```
+
+### Performance levels
+
+- `90%–100%`: Excellent
+- `75%–89%`: Very Good
+- `60%–74%`: Good
+- `Below 60%`: Review and Try Again
+
+### Incorrect-answer review
+
+Only incorrectly answered questions appear in the review list.
+
+Each incorrect-answer card displays:
+
+- Original question number
+- Question text
+- Your answer
+- Correct answer
+- Educational explanation
+
+Answers cannot be changed from the review screen.
+
+If every answer is correct, the review displays:
+
+```text
+Excellent! All answers are correct.
+```
+
+### Review actions
+
+#### View Certificate
+
+The `View Certificate` button:
+
+1. Opens the existing certificate.
+2. Preserves the final score.
+3. Uses the configured Exam total as the score denominator.
+4. Preserves the Print Certificate behavior.
+
+#### Retry Exam
+
+The `Retry Exam` button:
+
+1. Restarts the Exam at Question 1.
+2. Resets the score.
+3. Clears the previous answer history.
+4. Clears old answer feedback.
+5. Removes the previous review results.
+
+### Validation checklist
+
+Confirm:
+
+- [ ] Exam Review appears after the final question.
+- [ ] The certificate does not appear before Exam Review.
+- [ ] Score uses the correct denominator.
+- [ ] Correct and incorrect totals are accurate.
+- [ ] Accuracy is calculated correctly.
+- [ ] The correct performance level appears.
+- [ ] Only incorrect answers appear in the review list.
+- [ ] Original question numbers are preserved.
+- [ ] Every incorrect card displays both answers and an explanation.
+- [ ] The all-correct message appears when appropriate.
+- [ ] View Certificate preserves the final score.
+- [ ] Print Certificate works.
+- [ ] Retry Exam returns to Question 1.
+- [ ] Retry Exam clears the previous score and answer history.
+- [ ] The review remains readable at 390px width.
+- [ ] No horizontal overflow appears.
+- [ ] No game-related Console errors appear.
+
+---
+
 Always keep a stable tagged release before major engine changes.
