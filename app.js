@@ -37,12 +37,20 @@ function validateGameConfig(config) {
   addMissing(exam?.successSound, "GAME_CONFIG.exam.successSound");
   addMissing(exam?.wrongSound, "GAME_CONFIG.exam.wrongSound");
   if (Array.isArray(exam?.questions)) {
+    const questionIds = new Set();
+    const supportedTypes = new Set(["name", "function", "sequence", "application"]);
     exam.questions.forEach((question, index) => {
       const path = `GAME_CONFIG.exam.questions[${index}]`;
-      addMissing(question?.q, `${path}.q`);
-      addMissing(Array.isArray(question?.o) && question.o.length >= 2, `${path}.o with at least 2 options`);
-      addMissing(question?.a, `${path}.a`);
-      addMissing(Array.isArray(question?.o) && question.o.includes(question.a), `${path}.a included in ${path}.o`);
+      addMissing(typeof question?.id === "string" && question.id.trim().length > 0, `${path}.id`);
+      if (question?.id && questionIds.has(question.id)) errors.push(`Duplicate ${path}.id: ${question.id}`);
+      if (question?.id) questionIds.add(question.id);
+      addMissing(supportedTypes.has(question?.type), `${path}.type`);
+      addMissing(typeof question?.question === "string" && question.question.trim().length > 0, `${path}.question`);
+      addMissing(Array.isArray(question?.options) && question.options.length >= 2, `${path}.options with at least 2 options`);
+      addMissing(Array.isArray(question?.options) && new Set(question.options).size === question.options.length, `${path}.options with no duplicate values`);
+      addMissing(typeof question?.answer === "string" && question.answer.trim().length > 0, `${path}.answer`);
+      addMissing(Array.isArray(question?.options) && question.options.includes(question.answer), `${path}.answer included in ${path}.options`);
+      addMissing(typeof question?.explanation === "string" && question.explanation.trim().length > 0, `${path}.explanation`);
     });
   }
 

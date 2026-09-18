@@ -786,6 +786,14 @@
   color: #fff;
 }
 
+#level3 #examFeedback {
+  max-width: 720px;
+  margin: 22px auto 0;
+  padding: 14px 18px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
 #level3 .controls {
   justify-content: space-between;
   align-items: center;

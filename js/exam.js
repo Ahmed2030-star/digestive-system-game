@@ -23,10 +23,10 @@
       .replace("{current}", examQuestionIndex + 1)
       .replace("{total}", examQuestions.length);
     examProgressFill.style.width = `${(examQuestionIndex + 1) / examQuestions.length * 100}%`;
-    examQuestion.textContent = question.q;
+    examQuestion.textContent = question.question;
     examFeedback.textContent = "";
     examOptions.innerHTML = "";
-    [...question.o].sort(() => Math.random() - 0.5).forEach(option => {
+    [...question.options].sort(() => Math.random() - 0.5).forEach(option => {
       const optionButton = document.createElement("button");
       optionButton.className = "exam-option";
       optionButton.textContent = option;
@@ -34,14 +34,17 @@
         if (examAnswered) return;
         examAnswered = true;
         document.querySelectorAll(".exam-option").forEach(button => button.disabled = true);
-        if (option === question.a) {
+        if (option === question.answer) {
           examScore++;
           optionButton.classList.add("correct");
-          examFeedback.textContent = window.GAME_CONFIG.ui.exam.correctFeedback;
+          examFeedback.textContent = `Correct! ${question.explanation}`;
           GameAudio.playExamSuccess();
         } else {
           optionButton.classList.add("incorrect");
-          examFeedback.textContent = window.GAME_CONFIG.ui.exam.incorrectFeedback.replace("{answer}", question.a);
+          [...document.querySelectorAll(".exam-option")]
+            .find(button => button.textContent === question.answer)
+            ?.classList.add("correct");
+          examFeedback.textContent = `Not quite. The correct answer is ${question.answer}. ${question.explanation}`;
           GameAudio.playExamWrong();
         }
         nextQuestionButton.style.display = "inline-block";
@@ -103,6 +106,8 @@
     examQuestion = document.getElementById("examQuestion");
     examOptions = document.getElementById("examOptions");
     examFeedback = document.getElementById("examFeedback");
+    examFeedback.setAttribute("role", "status");
+    examFeedback.setAttribute("aria-live", "polite");
     startExamButton.onclick = start;
     backToChallengeButton.onclick = () => {
       cleanup();
