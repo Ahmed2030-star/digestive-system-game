@@ -80,6 +80,46 @@
     });
   }
 
+  function getSlotPartId(slot) {
+    return slot.dataset.answer || "";
+  }
+
+  function clearChallengeSlot(slot) {
+    const number = slot.querySelector("strong")?.textContent || "";
+    slot.innerHTML = `<strong>${number}</strong><span>${window.GAME_CONFIG.ui.challenge.emptySlot}</span>`;
+    delete slot.dataset.answer;
+    slot.classList.remove("filled", "correct", "incorrect", "active", "success", "error");
+  }
+
+  function returnPartToWordBank(partId) {
+    if (!partId) return;
+    document.querySelector(`#level2 .drag-word[data-part="${partId}"]`)?.classList.remove("used");
+  }
+
+  function placePartInSlot(partId, slot) {
+    const item = challengeParts.find(part => part.id === partId);
+    if (!item) return;
+
+    const currentPartId = getSlotPartId(slot);
+    if (currentPartId === partId) return;
+
+    const previousSlot = document.querySelector(`#level2 .answer-slot[data-answer="${partId}"]`);
+    if (previousSlot && previousSlot !== slot) clearChallengeSlot(previousSlot);
+
+    if (currentPartId) returnPartToWordBank(currentPartId);
+    clearChallengeSlot(slot);
+    slot.dataset.answer = partId;
+    slot.innerHTML = `<strong>${slot.querySelector("strong")?.textContent || ""}</strong><span class="slot-answer-text">${item.name}</span>`;
+    const audioButton = document.createElement("button");
+    audioButton.type = "button";
+    audioButton.className = "audio-btn";
+    audioButton.dataset.part = partId;
+    audioButton.setAttribute("aria-label", `Play ${item.name} audio`);
+    audioButton.textContent = "🔊";
+    slot.appendChild(audioButton);
+    document.querySelector(`#level2 .drag-word[data-part="${partId}"]`)?.classList.add("used");
+  }
+
   function makeChallengeSlot(part, index) {
     const slot = document.createElement("div");
     slot.className = "answer-slot";
@@ -104,18 +144,7 @@
     slot.ondrop = event => {
       event.preventDefault();
       const id = event.dataTransfer.getData("text/plain");
-      const item = challengeParts.find(partItem => partItem.id === id);
-      if (!item) return;
-      slot.dataset.answer = id;
-      slot.innerHTML = `<strong>${index + 1}</strong><span class="slot-answer-text">${item.name}</span>`;
-      const audioButton = document.createElement("button");
-      audioButton.type = "button";
-      audioButton.className = "audio-btn";
-      audioButton.dataset.part = id;
-      audioButton.setAttribute("aria-label", `Play ${item.name} audio`);
-      audioButton.textContent = "🔊";
-      slot.appendChild(audioButton);
-      document.querySelector(`#level2 .drag-word[data-part="${id}"]`)?.classList.add("used");
+      placePartInSlot(id, slot);
       clearChallengeDragState();
     };
     return slot;
@@ -200,12 +229,10 @@
     });
     resetIncorrectBtn.onclick = () => {
       document.querySelectorAll("#level2 .answer-slot").forEach(slot => {
-        const wrongId = slot.dataset.answer;
+        const wrongId = getSlotPartId(slot);
         if (!wrongId || wrongId === slot.dataset.part) return;
-        document.querySelector(`#level2 .drag-word[data-part="${wrongId}"]`)?.classList.remove("used");
-        slot.innerHTML = `<strong>${slot.querySelector("strong")?.textContent || ""}</strong><span>${config.ui.challenge.emptySlot}</span>`;
-        delete slot.dataset.answer;
-        slot.classList.remove("filled", "correct", "incorrect", "active", "success");
+        returnPartToWordBank(wrongId);
+        clearChallengeSlot(slot);
       });
       clearChallengeDragState();
       challengeFeedback.textContent = config.ui.challenge.incorrectResetMessage;
