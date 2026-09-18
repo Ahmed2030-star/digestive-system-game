@@ -163,12 +163,54 @@ window.GAME_CONFIG = {
     wrongSound: "assets/audio/digestive-system/exam/wrong.mp3",
     questionsPerAttempt: 6,
     questions: [
-      {q: "Where does food enter the digestive system?", o: ["Mouth", "Stomach", "Anus", "Large Intestine"], a: "Mouth"},
-      {q: "Which tube carries food to the stomach?", o: ["Esophagus", "Small Intestine", "Large Intestine", "Anus"], a: "Esophagus"},
-      {q: "Which organ mixes food with digestive juices?", o: ["Stomach", "Mouth", "Anus", "Esophagus"], a: "Stomach"},
-      {q: "Where are most nutrients absorbed?", o: ["Small Intestine", "Large Intestine", "Mouth", "Anus"], a: "Small Intestine"},
-      {q: "Which part absorbs water and forms solid waste?", o: ["Large Intestine", "Stomach", "Esophagus", "Mouth"], a: "Large Intestine"},
-      {q: "Through which opening does solid waste leave the body?", o: ["Anus", "Mouth", "Stomach", "Esophagus"], a: "Anus"}
+      {
+        id: "name-mouth-1",
+        type: "name",
+        question: "Where does food enter the digestive system?",
+        options: ["Mouth", "Stomach", "Anus", "Large Intestine"],
+        answer: "Mouth",
+        explanation: "Food enters through the mouth, where chewing begins."
+      },
+      {
+        id: "name-esophagus-1",
+        type: "name",
+        question: "Which tube carries food to the stomach?",
+        options: ["Esophagus", "Small Intestine", "Large Intestine", "Anus"],
+        answer: "Esophagus",
+        explanation: "The esophagus is a muscular tube that carries food to the stomach."
+      },
+      {
+        id: "function-stomach-1",
+        type: "function",
+        question: "Which organ mixes food with digestive juices?",
+        options: ["Stomach", "Mouth", "Anus", "Esophagus"],
+        answer: "Stomach",
+        explanation: "The stomach mixes food with digestive juices to help break it down."
+      },
+      {
+        id: "function-small-intestine-1",
+        type: "function",
+        question: "Where are most nutrients absorbed?",
+        options: ["Small Intestine", "Large Intestine", "Mouth", "Anus"],
+        answer: "Small Intestine",
+        explanation: "The small intestine absorbs most nutrients from digested food."
+      },
+      {
+        id: "function-large-intestine-1",
+        type: "function",
+        question: "Which part absorbs water and forms solid waste?",
+        options: ["Large Intestine", "Stomach", "Esophagus", "Mouth"],
+        answer: "Large Intestine",
+        explanation: "The large intestine absorbs water and helps form solid waste."
+      },
+      {
+        id: "function-anus-1",
+        type: "function",
+        question: "Through which opening does solid waste leave the body?",
+        options: ["Anus", "Mouth", "Stomach", "Esophagus"],
+        answer: "Anus",
+        explanation: "Solid waste leaves the body through the anus."
+      }
     ]
   },
 
