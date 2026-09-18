@@ -85,7 +85,7 @@
     const date = certificate.dateEnabled
       ? `<p>${new Date().toLocaleDateString()}</p>`
       : "";
-    document.querySelector(".exam-container").innerHTML = `<div class="certificate"><h1>🏆 ${certificate.title}</h1><h2>${certificate.gameTitle}</h2><p>${certificate.description}</p><h3>Score: ${examScore}/${examQuestions.length}${scoreStatus}</h3>${studentName}${date}<button class="certificate-print" onclick="window.print()">${certificate.printButton}</button></div>`;
+    document.querySelector(".exam-container").innerHTML = `<div class="certificate"><h1>🏆 ${certificate.title}</h1><h2>${certificate.gameTitle}</h2><p>${certificate.description}</p><h3>Score: ${examScore}/${examQuestions.length}${scoreStatus}</h3>${studentName}${date}<button class="certificate-print" onclick="window.print()">🖨 Print Certificate</button></div>`;
   }
 
   function init() {
