@@ -949,9 +949,8 @@
   justify-self: center;
   align-self: center;
 }
-
 /* =========================================
-   CHALLENGE: subtle Show Hint interaction
+   CHALLENGE: subtle Show Hint glow
    ========================================= */
 
 #level2 .challenge-hint-btn {
@@ -967,36 +966,67 @@
   color: #0874cc;
 
   box-shadow:
-    0 2px 5px rgba(33, 133, 208, 0.16);
+    0 2px 5px rgba(33, 133, 208, 0.15);
 
   transition:
     transform 0.15s ease,
     border-color 0.15s ease,
     background-color 0.15s ease,
-    box-shadow 0.15s ease;
+    box-shadow 0.15s ease,
+    filter 0.15s ease;
 }
 
-/* Subtle selected state */
-#level2 .challenge-hint-btn:hover,
-#level2 .challenge-hint-btn.hint-ready {
-  transform: scale(1.025);
+/* Subtle glow when the pointer is over the button */
+#level2 .challenge-hint-btn:hover {
+  transform: scale(1.015);
 
-  border-color: #2185d0;
+  border-color: #2196f3;
+  background: #f2f9ff;
+
+  box-shadow:
+    0 0 0 3px rgba(33, 150, 243, 0.18),
+    0 0 12px rgba(33, 150, 243, 0.45);
+
+  filter: brightness(1.04);
+}
+
+/* Persistent subtle glow when a label is selected */
+#level2 .challenge-hint-btn.hint-ready {
+  transform: scale(1.01);
+
+  border-color: #2196f3;
   background: #eef7ff;
 
   box-shadow:
-    0 0 0 4px rgba(33, 133, 208, 0.18),
-    0 3px 7px rgba(33, 133, 208, 0.16);
+    0 0 0 3px rgba(33, 150, 243, 0.16),
+    0 0 10px rgba(33, 150, 243, 0.36);
 }
 
-/* Subtle press state */
-#level2 .challenge-hint-btn:active {
-  transform: scale(0.98);
+/* Slightly stronger glow while hovering in the ready state */
+#level2 .challenge-hint-btn.hint-ready:hover {
+  transform: scale(1.02);
 
-  background: #e1f1ff;
+  background: #f2f9ff;
 
   box-shadow:
-    0 0 0 3px rgba(33, 133, 208, 0.15);
+    0 0 0 4px rgba(33, 150, 243, 0.2),
+    0 0 15px rgba(33, 150, 243, 0.52);
+
+  filter: brightness(1.04);
+}
+
+/* Subtle press feedback */
+#level2 .challenge-hint-btn:active,
+#level2 .challenge-hint-btn.hint-ready:active {
+  transform: scale(0.985);
+
+  background: #e4f3ff;
+
+  box-shadow:
+    0 0 0 3px rgba(33, 150, 243, 0.14),
+    0 0 7px rgba(33, 150, 243, 0.3);
+
+  filter: brightness(0.98);
 }
 
 /* Keyboard focus */
@@ -1004,19 +1034,21 @@
   outline: none;
 
   box-shadow:
-    0 0 0 4px rgba(33, 133, 208, 0.25);
+    0 0 0 4px rgba(33, 150, 243, 0.27),
+    0 0 12px rgba(33, 150, 243, 0.4);
 }
 
+
+/* Reduced-motion support */
 @media (prefers-reduced-motion: reduce) {
   #level2 .challenge-hint-btn,
-  #level2 .challenge-hint-btn.hint-ready {
-    animation: none !important;
-    transition: none !important;
-  }
-
   #level2 .challenge-hint-btn:hover,
   #level2 .challenge-hint-btn:active,
-  #level2 .challenge-hint-btn.hint-ready {
+  #level2 .challenge-hint-btn.hint-ready,
+  #level2 .challenge-hint-btn.hint-ready:hover,
+  #level2 .challenge-hint-btn.hint-ready:active {
     transform: none !important;
+    transition: none !important;
+    animation: none !important;
   }
 }
