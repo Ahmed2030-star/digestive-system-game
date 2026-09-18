@@ -1672,4 +1672,123 @@ Confirm:
 
 ---
 
+---
+
+## 38. Exam Student Name and Certificate Date
+
+The Exam can display a configurable student-name entry screen before
+Question 1.
+
+The entered name is used on the final certificate together with the
+current date.
+
+### Exam flow
+
+```text
+Start Exam
+→ Enter Your Name
+→ Begin Exam
+→ Question 1 of 24
+→ Exam Review
+→ View Certificate
+```
+
+### Student-entry configuration
+
+Configure the student-name screen inside the existing Exam configuration
+in `game-config.js`:
+
+```javascript
+studentEntry: {
+  enabled: true,
+  title: "Enter Your Name",
+  instruction:
+    "Enter your name before starting the Exam.",
+  label: "Student name",
+  placeholder: "Type your name",
+  beginButton: "Begin Exam",
+  backButton: "Back to Challenge",
+  requiredMessage: "Please enter your name.",
+  maxLength: 50
+}
+```
+
+### Configuration behavior
+
+- `enabled`: Shows or skips the student-name screen.
+- `title`: Controls the student-entry heading.
+- `instruction`: Displays the instruction above the input.
+- `label`: Provides a visible label for the student-name input.
+- `placeholder`: Displays example text inside the input.
+- `beginButton`: Controls the Begin Exam button text.
+- `backButton`: Controls the Back to Challenge button text.
+- `requiredMessage`: Appears when the submitted name is empty.
+- `maxLength`: Controls the maximum accepted name length.
+
+### Name validation
+
+The Exam:
+
+1. Removes leading and trailing spaces.
+2. Rejects an empty name.
+3. Rejects a value containing only spaces.
+4. Does not begin Question 1 until the name is valid.
+5. Keeps the entered name only during the current page session.
+6. Does not store the name in localStorage, cookies, or URL parameters.
+
+### Certificate configuration
+
+The certificate may use an empty fallback student name when student entry
+is enabled:
+
+```javascript
+certificate: {
+  title: "Certificate of Excellence",
+  gameTitle: "Digestive System Explorer",
+  description:
+    "This certificate is proudly awarded by Mr Ahmed Sayed Nasary for successfully completing the Level 3 Exam.",
+  studentName: "",
+  studentNameEnabled: true,
+  minimumPassingScore: 0,
+  dateEnabled: true,
+  printButton: "🖨 Print Certificate"
+}
+```
+
+When `dateEnabled` is `true`, the certificate displays the current local
+date.
+
+When a valid student name was entered, the certificate displays that name
+instead of the configured fallback value.
+
+### Retry and navigation behavior
+
+- Retry Exam preserves the entered name.
+- Retry Exam begins directly at Question 1.
+- Retry Exam resets the score and answer history.
+- Back to Challenge clears the entered name.
+- Starting Exam again from Challenge displays a fresh empty name form.
+
+### Validation checklist
+
+- [ ] Start Exam displays the student-name screen.
+- [ ] Empty submission is rejected.
+- [ ] A spaces-only value is rejected.
+- [ ] A valid name begins Question 1 of 24.
+- [ ] Next Question works after name entry.
+- [ ] Exam Review appears after Question 24.
+- [ ] The entered name appears on the certificate.
+- [ ] The current date appears when `dateEnabled` is true.
+- [ ] The certificate score remains X/24.
+- [ ] Retry Exam preserves the entered name.
+- [ ] Retry Exam clears the previous score and history.
+- [ ] Back to Challenge clears the entered name.
+- [ ] Starting Exam again displays an empty form.
+- [ ] Print Certificate works.
+- [ ] The form remains usable at 390px width.
+- [ ] No horizontal overflow appears.
+- [ ] No game-related Console errors appear.
+
+---
+
 Always keep a stable tagged release before major engine changes.
