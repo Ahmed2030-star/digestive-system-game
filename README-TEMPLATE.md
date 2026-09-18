@@ -1315,4 +1315,113 @@ Confirm:
 
 ---
 
+---
+
+## 35. Unlimited Challenge Visual Hint
+
+Challenge Mode includes an unlimited visual Hint system.
+
+The learner may use the Show Hint button at any time during Challenge
+Mode without a usage limit.
+
+### Configuration
+
+Configure the Hint behavior inside the existing Challenge configuration
+in `game-config.js`:
+
+```javascript
+hints: {
+  enabled: true,
+  duration: 2500,
+  playAudio: true,
+  buttonText: "Show Hint",
+  selectFirstMessage: "Select a label first."
+}
+```
+
+### Configuration properties
+
+- `enabled`: Shows or hides the Show Hint button.
+- `duration`: Controls how long the temporary visual Hint remains visible.
+- `playAudio`: Enables or disables pronunciation audio during the Hint.
+- `buttonText`: Controls the visible button label.
+- `selectFirstMessage`: Appears when Show Hint is pressed without selecting a label.
+
+### Hover and Show Hint behavior
+
+Hovering over a Word Bank label:
+
+1. Displays the configured text Hint only.
+2. Does not activate the Highlight.
+3. Does not activate the connector.
+4. Does not play pronunciation audio.
+5. Does not place the selected label.
+
+Selecting a label and pressing Show Hint:
+
+1. Displays the configured text Hint.
+2. Shows the correct Challenge Highlight.
+3. Activates the correct connector.
+4. Plays pronunciation audio when enabled.
+5. Clears the temporary visual Hint after the configured duration.
+6. Keeps the selected label available for Tap-to-Place.
+
+### Unlimited behavior
+
+- The Show Hint button remains available throughout Challenge Mode.
+- No remaining-Hint counter is displayed.
+- The button does not become disabled after repeated use.
+- The same selected label may request the Hint repeatedly.
+- Selecting another label changes the visual Hint target.
+
+### Show Hint button interaction
+
+The Show Hint button uses a subtle interaction effect:
+
+- A light-blue Glow appears during pointer hover.
+- The button increases in size only slightly.
+- The button does not move vertically.
+- Pressing the button produces a small scale reduction.
+- Reduced-motion preferences disable transform-based movement.
+
+### Cleanup behavior
+
+The active visual Hint is cleared when:
+
+- The selected label changes.
+- Drag-and-drop begins.
+- Reset All is selected.
+- RESET INCORRECT is selected.
+- Challenge Mode is left.
+- Exam Mode begins.
+- The completion modal opens.
+- Play Again is selected.
+
+### Validation checklist
+
+Confirm:
+
+- [ ] Show Hint appears without a remaining-Hint counter.
+- [ ] Pressing Show Hint without selecting a label displays `Select a label first.`
+- [ ] Hovering over a label displays text only.
+- [ ] Hovering does not display a Highlight or activate a connector.
+- [ ] Selecting a label and pressing Show Hint displays the correct Highlight.
+- [ ] The correct connector becomes active.
+- [ ] The configured text Hint appears.
+- [ ] Pronunciation audio works when enabled.
+- [ ] The temporary visual Hint clears after the configured duration.
+- [ ] The selected label remains selected after the Hint clears.
+- [ ] Show Hint remains available after repeated use.
+- [ ] Tap-to-Place remains operational.
+- [ ] Desktop drag-and-drop remains operational.
+- [ ] Each answer slot accepts exactly one label.
+- [ ] Reset All clears the active visual Hint.
+- [ ] RESET INCORRECT clears the active visual Hint.
+- [ ] Explorer Guided Tour and progress remain unchanged.
+- [ ] Exam Mode and the certificate remain unchanged.
+- [ ] The button Glow works without vertical movement.
+- [ ] No game-related Console errors appear.
+
+---
+
 Always keep a stable tagged release before major engine changes.
