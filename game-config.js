@@ -10,6 +10,12 @@ window.GAME_CONFIG = {
   },
 
   explorer: {
+    progressTracking: {
+      enabled: true,
+      label: "Explored",
+      completedMessage: "All parts explored!",
+      persist: false
+    },
     guidedTour: {
       enabled: true,
       durationPerPart: 3500,
