@@ -17,10 +17,41 @@
   let challengeConnectorLayer;
   let challengeConnectorLines;
   let challengeTooltip;
+  let hintButton;
+  let hintsConfig;
+  let hintTimeoutId = null;
   let challengeDragging = false;
   let selectedPartId = null;
   let winModal;
   let initialized = false;
+
+  function clearChallengeHint() {
+    if (hintTimeoutId !== null) {
+      clearTimeout(hintTimeoutId);
+      hintTimeoutId = null;
+    }
+    hideHighlight();
+    setChallengeConnector("");
+    challengeTooltip.classList.remove("show");
+    if (selectedPartId) {
+      challengeFeedback.textContent = window.GAME_CONFIG.ui.challenge.tapToPlaceInstruction;
+    }
+  }
+
+  function showChallengeHint(partId) {
+    const part = challengeParts.find(item => item.id === partId);
+    if (!part) return;
+    clearChallengeHint();
+    showChallengeHighlight(partId);
+    setChallengeConnector(partId);
+    challengeTooltip.textContent = part.hint;
+    challengeTooltip.style.left = "50%";
+    challengeTooltip.style.top = "12px";
+    challengeTooltip.classList.add("show");
+    challengeFeedback.textContent = part.hint;
+    if (hintsConfig.playAudio) GameAudio.playChallenge(partId);
+    hintTimeoutId = setTimeout(clearChallengeHint, hintsConfig.duration);
+  }
 
   function showChallengeHighlight(partId) {
     if (document.getElementById("level2").hidden) return;
@@ -45,6 +76,7 @@
 
   function clearChallengeDragState() {
     challengeDragging = false;
+    clearChallengeHint();
     hideHighlight();
     setChallengeConnector("");
     document.querySelectorAll("#level2 .answer-slot").forEach(slot => slot.classList.remove("active"));
@@ -52,6 +84,7 @@
   }
 
   function cleanup() {
+    clearChallengeHint();
     clearChallengeDragState();
     GameAudio.stopChallenge();
     GameAudio.stopChallengeCompletion();
@@ -98,6 +131,7 @@
   }
 
   function clearSelectedPart() {
+    clearChallengeHint();
     selectedPartId = null;
     wordBank?.querySelectorAll(".drag-word").forEach(word => {
       word.classList.remove("selected-for-placement");
@@ -107,6 +141,7 @@
   }
 
   function selectPartForPlacement(partId, word) {
+    clearChallengeHint();
     if (selectedPartId === partId) {
       clearSelectedPart();
       return;
@@ -195,6 +230,7 @@
   }
 
   function buildChallenge() {
+    clearChallengeHint();
     clearSelectedPart();
     wordBank.innerHTML = "";
     challengeLeftSlots.innerHTML = "";
@@ -229,6 +265,7 @@
       };
       word.onmouseleave = () => challengeTooltip.classList.remove("show");
       word.ondragstart = event => {
+        clearChallengeHint();
         challengeDragging = true;
         event.dataTransfer.setData("text/plain", part.id);
         challengeTooltip.classList.remove("show");
@@ -273,6 +310,25 @@
     challengeConnectorLines = document.getElementById("challengeConnectorLines");
     challengeTooltip = document.getElementById("partTooltip");
     winModal = document.getElementById("winModal");
+    hintsConfig = config.challenge.hints;
+    if (hintsConfig.enabled) {
+      const hintControls = document.createElement("div");
+      hintControls.className = "challenge-hint-controls";
+      hintButton = document.createElement("button");
+      hintButton.type = "button";
+      hintButton.className = "challenge-hint-btn";
+      hintButton.setAttribute("aria-label", hintsConfig.buttonText);
+      hintButton.textContent = hintsConfig.buttonText;
+      hintButton.onclick = () => {
+        if (!selectedPartId) {
+          challengeFeedback.textContent = hintsConfig.selectFirstMessage;
+          return;
+        }
+        showChallengeHint(selectedPartId);
+      };
+      hintControls.append(hintButton);
+      document.querySelector("#level2 > p")?.after(hintControls);
+    }
 
     document.addEventListener("click", event => {
       const button = event.target.closest("#level2 .answer-slot .audio-btn");
@@ -303,15 +359,18 @@
       challengeFeedback.textContent = config.ui.challenge.scoreFormat.replace("{score}", challengeScore).replace("{total}", challengeParts.length);
       const score = challengeScore;
       if (score === 6) {
+        clearChallengeHint();
         GameAudio.playChallengeCompletion();
         document.getElementById("winModal")?.classList.add("show");
       }
     };
     document.getElementById("closeModalBtn")?.addEventListener("click", () => {
+      clearChallengeHint();
       GameAudio.stopChallengeCompletion();
       winModal?.classList.remove("show");
     });
     document.getElementById("playAgainBtn")?.addEventListener("click", () => {
+      clearChallengeHint();
       winModal?.classList.remove("show");
       resetAllBtn.click();
     });
