@@ -1149,4 +1149,96 @@ Confirm:
 
 ---
 
+---
+
+## 33. Challenge Tap-to-Place Support
+
+Challenge Mode supports an alternative placement method for phones,
+tablets, touchscreens, mouse users, and keyboard users.
+
+The existing desktop drag-and-drop behavior remains available.
+
+### Configuration
+
+The instruction text is configured in `game-config.js`:
+
+```javascript
+ui: {
+  challenge: {
+    tapToPlaceInstruction:
+      "Now choose an answer slot."
+  }
+}
+```
+
+### Tap-to-Place behavior
+
+1. Select a label in the Word Bank.
+2. The selected label receives a visible selected state.
+3. The instruction asks the learner to choose an answer slot.
+4. Select an answer slot.
+5. The selected label moves into the slot.
+6. The selected state is cleared after placement.
+
+### Replacing an occupied slot
+
+If the learner places a new label in an occupied slot:
+
+1. The old label returns to the Word Bank.
+2. The old audio button is removed.
+3. The new label replaces the old label.
+4. The slot keeps its visible number.
+5. The slot contains exactly one label.
+6. The slot contains no more than one audio button.
+
+### Cancelling selection
+
+The current selection can be cancelled by:
+
+- Selecting the same Word Bank label again.
+- Pressing the Escape key.
+- Using Reset All.
+- Using RESET INCORRECT.
+- Leaving Challenge Mode.
+- Starting Exam Mode.
+
+### Keyboard support
+
+1. Use `Tab` to focus a Word Bank label.
+2. Press `Enter` or `Space` to select it.
+3. Use `Tab` to focus an answer slot.
+4. Press `Enter` or `Space` to place the selected label.
+5. Press `Escape` to cancel the current selection.
+
+### Mobile testing
+
+Recommended test viewport:
+
+```text
+Width: 390 px
+Height: 844 px
+```
+
+Confirm:
+
+- [ ] A Word Bank label can be selected by tapping.
+- [ ] The selected label has a visible selected state.
+- [ ] The placement instruction appears.
+- [ ] Tapping an empty slot places the selected label.
+- [ ] Tapping an occupied slot replaces its current label.
+- [ ] The replaced label returns to the Word Bank exactly once.
+- [ ] No slot contains more than one label.
+- [ ] No slot contains more than one audio button.
+- [ ] Selecting the same label again cancels selection.
+- [ ] Selecting another label transfers selection.
+- [ ] Escape cancels selection.
+- [ ] Enter and Space work.
+- [ ] Reset All clears selection.
+- [ ] RESET INCORRECT clears selection.
+- [ ] Vertical scrolling remains available.
+- [ ] Desktop drag-and-drop continues to work.
+- [ ] No duplicate labels appear.
+
+---
+
 Always keep a stable tagged release before major engine changes.
