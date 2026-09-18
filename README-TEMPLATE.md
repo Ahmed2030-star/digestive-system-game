@@ -1424,4 +1424,143 @@ Confirm:
 
 ---
 
+---
+
+## 36. Curriculum-Aligned Exam Question Bank
+
+The Exam contains a configurable curriculum-aligned question bank.
+
+The current Digestive System example includes 24 Grade 4 questions.
+
+### Exam configuration
+
+```javascript
+exam: {
+  questionsPerAttempt: 24,
+  questions: [
+    // Exam questions
+  ]
+}
+```
+
+When `questionsPerAttempt` is set to `24`, the Exam displays:
+
+```text
+Question 1 of 24
+```
+
+through:
+
+```text
+Question 24 of 24
+```
+
+The final score and certificate use the same denominator:
+
+```text
+Score: X/24
+```
+
+### Question structure
+
+Each question uses the following structure:
+
+```javascript
+{
+  id: "function-small-intestine-01",
+  type: "function",
+  question: "Where are most nutrients absorbed?",
+  options: [
+    "Mouth",
+    "Stomach",
+    "Small Intestine",
+    "Large Intestine"
+  ],
+  answer: "Small Intestine",
+  explanation:
+    "Most nutrients are absorbed through the wall of the small intestine."
+}
+```
+
+### Required properties
+
+Every question must contain:
+
+- `id`
+- `type`
+- `question`
+- `options`
+- `answer`
+- `explanation`
+
+### Supported question types
+
+```text
+name
+function
+sequence
+application
+```
+
+### Editing questions
+
+You may modify the question bank later inside `game-config.js`.
+
+When editing a question:
+
+1. Keep the question ID unique.
+2. Use one supported question type.
+3. Provide exactly four unique options.
+4. Make the answer exactly match one option.
+5. Add a short educational explanation.
+6. Use clear, age-appropriate language.
+7. Avoid ambiguous questions.
+8. Do not use the legacy fields `q`, `o`, or `a`.
+
+### Adding or removing questions
+
+If the complete question bank should appear in every Exam attempt, update:
+
+```javascript
+questionsPerAttempt: 24
+```
+
+to match the total number of configured questions.
+
+For example, if the bank contains 30 questions:
+
+```javascript
+questionsPerAttempt: 30
+```
+
+If the bank contains 20 questions:
+
+```javascript
+questionsPerAttempt: 20
+```
+
+### Validation checklist
+
+Confirm:
+
+- [ ] The configured question total is correct.
+- [ ] `questionsPerAttempt` matches the intended Exam length.
+- [ ] Every question ID is unique.
+- [ ] Every type is supported.
+- [ ] Every question has exactly four options.
+- [ ] Options within each question are unique.
+- [ ] Every answer exactly matches one option.
+- [ ] Every question has an explanation.
+- [ ] Correct feedback displays the explanation.
+- [ ] Incorrect feedback displays the correct answer and explanation.
+- [ ] Progress begins at Question 1.
+- [ ] Progress ends at the configured question total.
+- [ ] The final score uses the correct denominator.
+- [ ] The certificate uses the correct denominator.
+- [ ] Success and wrong audio work.
+- [ ] Print Certificate works.
+- [ ] No game-related Console errors appear.
+
+---
+
 Always keep a stable tagged release before major engine changes.
