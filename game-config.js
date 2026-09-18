@@ -161,26 +161,71 @@ window.GAME_CONFIG = {
   exam: {
     successSound: "assets/audio/digestive-system/exam/success.mp3",
     wrongSound: "assets/audio/digestive-system/exam/wrong.mp3",
-    questionsPerAttempt: 6,
+    questionsPerAttempt: 24,
     questions: [
       {
-        id: "name-mouth-1",
+        id: "name-digestion-01",
         type: "name",
-        question: "Where does food enter the digestive system?",
-        options: ["Mouth", "Stomach", "Anus", "Large Intestine"],
+        question: "What is digestion?",
+        options: [
+          "Breaking food into simpler substances",
+          "Moving air into the lungs",
+          "Pumping blood around the body",
+          "Making bones stronger"
+        ],
+        answer: "Breaking food into simpler substances",
+        explanation: "Digestion breaks food into simpler substances that the body can use."
+      },
+      {
+        id: "name-mouth-01",
+        type: "name",
+        question: "Where does food first enter the digestive tract?",
+        options: ["Mouth", "Stomach", "Small Intestine", "Large Intestine"],
         answer: "Mouth",
-        explanation: "Food enters through the mouth, where chewing begins."
+        explanation: "Food first enters the digestive tract through the mouth."
       },
       {
-        id: "name-esophagus-1",
+        id: "name-esophagus-01",
         type: "name",
-        question: "Which tube carries food to the stomach?",
-        options: ["Esophagus", "Small Intestine", "Large Intestine", "Anus"],
+        question: "Which part carries food from the pharynx to the stomach?",
+        options: ["Esophagus", "Mouth", "Large Intestine", "Anus"],
         answer: "Esophagus",
-        explanation: "The esophagus is a muscular tube that carries food to the stomach."
+        explanation: "The esophagus is the food pipe that carries swallowed food to the stomach."
       },
       {
-        id: "function-stomach-1",
+        id: "name-digestive-organ-01",
+        type: "name",
+        question: "Which organ is part of the digestive system?",
+        options: ["Stomach", "Lung", "Heart", "Brain"],
+        answer: "Stomach",
+        explanation: "The stomach is a digestive organ that helps break down food."
+      },
+      {
+        id: "function-saliva-01",
+        type: "function",
+        question: "What is one role of saliva?",
+        options: ["It mixes with food in the mouth", "It stores solid waste", "It carries food through the esophagus", "It absorbs most nutrients"],
+        answer: "It mixes with food in the mouth",
+        explanation: "Saliva moistens food and helps digestion begin in the mouth."
+      },
+      {
+        id: "function-starch-mouth-01",
+        type: "function",
+        question: "Why does starch digestion begin in the mouth?",
+        options: ["Saliva starts breaking down starch", "The stomach is next to the mouth", "Teeth absorb starch", "The anus removes starch"],
+        answer: "Saliva starts breaking down starch",
+        explanation: "Saliva contains a substance that starts breaking down starch while food is chewed."
+      },
+      {
+        id: "function-esophagus-01",
+        type: "function",
+        question: "What is the function of the food pipe (Esophagus)?",
+        options: ["It carries food to the stomach", "It absorbs water from waste", "It chews food", "It removes solid waste"],
+        answer: "It carries food to the stomach",
+        explanation: "The Esophagus carries swallowed food from the pharynx to the stomach."
+      },
+      {
+        id: "function-stomach-01",
         type: "function",
         question: "Which organ mixes food with digestive juices?",
         options: ["Stomach", "Mouth", "Anus", "Esophagus"],
@@ -188,7 +233,7 @@ window.GAME_CONFIG = {
         explanation: "The stomach mixes food with digestive juices to help break it down."
       },
       {
-        id: "function-small-intestine-1",
+        id: "function-small-intestine-01",
         type: "function",
         question: "Where are most nutrients absorbed?",
         options: ["Small Intestine", "Large Intestine", "Mouth", "Anus"],
@@ -196,7 +241,15 @@ window.GAME_CONFIG = {
         explanation: "The small intestine absorbs most nutrients from digested food."
       },
       {
-        id: "function-large-intestine-1",
+        id: "function-small-intestine-blood-vessels-01",
+        type: "function",
+        question: "Why do blood vessels surround the small intestine?",
+        options: ["To carry absorbed nutrients around the body", "To chew food", "To carry food back to the mouth", "To remove solid waste"],
+        answer: "To carry absorbed nutrients around the body",
+        explanation: "Blood vessels carry nutrients absorbed by the small intestine to cells around the body."
+      },
+      {
+        id: "function-large-intestine-01",
         type: "function",
         question: "Which part absorbs water and forms solid waste?",
         options: ["Large Intestine", "Stomach", "Esophagus", "Mouth"],
@@ -204,12 +257,113 @@ window.GAME_CONFIG = {
         explanation: "The large intestine absorbs water and helps form solid waste."
       },
       {
-        id: "function-anus-1",
+        id: "function-anus-01",
         type: "function",
         question: "Through which opening does solid waste leave the body?",
         options: ["Anus", "Mouth", "Stomach", "Esophagus"],
         answer: "Anus",
         explanation: "Solid waste leaves the body through the anus."
+      },
+      {
+        id: "sequence-digestive-path-01",
+        type: "sequence",
+        question: "Which sequence shows the path food follows?",
+        options: [
+          "Mouth, Esophagus, Stomach, Small Intestine",
+          "Stomach, Mouth, Esophagus, Anus",
+          "Anus, Large Intestine, Stomach, Mouth",
+          "Mouth, Small Intestine, Esophagus, Stomach"
+        ],
+        answer: "Mouth, Esophagus, Stomach, Small Intestine",
+        explanation: "Food enters the mouth, travels through the Esophagus, and then reaches the stomach and small intestine."
+      },
+      {
+        id: "sequence-digestive-begin-end-01",
+        type: "sequence",
+        question: "Where does the digestive tract begin and end?",
+        options: ["Mouth and anus", "Stomach and mouth", "Esophagus and anus", "Mouth and stomach"],
+        answer: "Mouth and anus",
+        explanation: "The digestive tract begins at the mouth and ends at the anus."
+      },
+      {
+        id: "sequence-mouth-stomach-01",
+        type: "sequence",
+        question: "What comes after the mouth in the path of food?",
+        options: ["Esophagus", "Anus", "Large Intestine", "Small Intestine"],
+        answer: "Esophagus",
+        explanation: "After food is chewed and swallowed, it travels through the Esophagus."
+      },
+      {
+        id: "sequence-waste-processing-01",
+        type: "sequence",
+        question: "What happens before solid waste leaves the body?",
+        options: ["The large intestine absorbs water", "The anus chews the food", "The stomach sends food to the mouth", "The teeth absorb nutrients"],
+        answer: "The large intestine absorbs water",
+        explanation: "The large intestine absorbs water from waste before it leaves through the anus."
+      },
+      {
+        id: "sequence-nutrient-journey-01",
+        type: "sequence",
+        question: "Which order is correct after food reaches the stomach?",
+        options: ["Small Intestine, Large Intestine, Anus", "Anus, Small Intestine, Large Intestine", "Large Intestine, Stomach, Anus", "Mouth, Anus, Small Intestine"],
+        answer: "Small Intestine, Large Intestine, Anus",
+        explanation: "Food moves from the stomach to the small intestine, then the large intestine, and finally the anus."
+      },
+      {
+        id: "application-digestion-purpose-01",
+        type: "application",
+        question: "Why must food be broken into simpler substances?",
+        options: ["So the body can absorb and use it", "So it can turn into air", "So it can leave through the ears", "So the teeth can grow"],
+        answer: "So the body can absorb and use it",
+        explanation: "The body breaks food down so nutrients can be absorbed and used."
+      },
+      {
+        id: "application-chewing-01",
+        type: "application",
+        question: "What may happen if a child swallows food without chewing it well?",
+        options: ["The food may be harder to digest", "The food will skip the stomach", "The food will become water in the mouth", "The food will leave through the anus at once"],
+        answer: "The food may be harder to digest",
+        explanation: "Chewing makes food smaller, so swallowing food without proper chewing may make digestion harder."
+      },
+      {
+        id: "application-organ-function-01",
+        type: "application",
+        question: "A part mixes food with digestive juices. Which part is it?",
+        options: ["Stomach", "Esophagus", "Anus", "Large Intestine"],
+        answer: "Stomach",
+        explanation: "The stomach mixes food with digestive juices as it helps break food down."
+      },
+      {
+        id: "application-digestive-organ-01",
+        type: "application",
+        question: "Which group contains only digestive organs?",
+        options: ["Mouth, Stomach, Small Intestine", "Heart, Lung, Stomach", "Brain, Teeth, Lung", "Heart, Brain, Anus"],
+        answer: "Mouth, Stomach, Small Intestine",
+        explanation: "The mouth, stomach, and small intestine all help process food in the digestive system."
+      },
+      {
+        id: "application-nutrient-transport-01",
+        type: "application",
+        question: "Nutrients have been absorbed in the small intestine. What happens next?",
+        options: ["Blood vessels carry them around the body", "The anus sends them back to the mouth", "The teeth chew them again", "The large intestine turns them into air"],
+        answer: "Blood vessels carry them around the body",
+        explanation: "Blood vessels around the small intestine carry absorbed nutrients to the body."
+      },
+      {
+        id: "application-water-absorption-01",
+        type: "application",
+        question: "Which organ helps make waste more solid by absorbing water?",
+        options: ["Large Intestine", "Mouth", "Esophagus", "Stomach"],
+        answer: "Large Intestine",
+        explanation: "The large intestine absorbs water from waste, helping it become more solid."
+      },
+      {
+        id: "application-food-exit-01",
+        type: "application",
+        question: "A student asks where solid waste leaves the body. What is the best answer?",
+        options: ["Through the anus", "Through the Esophagus", "Through the stomach", "Through the small intestine"],
+        answer: "Through the anus",
+        explanation: "The anus is the opening through which solid waste leaves the body."
       }
     ]
   },
