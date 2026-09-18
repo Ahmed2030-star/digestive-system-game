@@ -365,7 +365,29 @@ window.GAME_CONFIG = {
         answer: "Through the anus",
         explanation: "The anus is the opening through which solid waste leaves the body."
       }
-    ]
+    ],
+    review: {
+      enabled: true,
+      title: "Exam Review",
+      scoreLabel: "Score",
+      correctLabel: "Correct Answers",
+      incorrectLabel: "Incorrect Answers",
+      accuracyLabel: "Accuracy",
+      performanceLabel: "Performance Level",
+      incorrectSectionTitle: "Review Incorrect Answers",
+      allCorrectMessage: "Excellent! All answers are correct.",
+      yourAnswerLabel: "Your answer",
+      correctAnswerLabel: "Correct answer",
+      explanationLabel: "Explanation",
+      viewCertificateButton: "View Certificate",
+      retryExamButton: "Retry Exam",
+      levels: [
+        { minimum: 90, label: "Excellent" },
+        { minimum: 75, label: "Very Good" },
+        { minimum: 60, label: "Good" },
+        { minimum: 0, label: "Review and Try Again" }
+      ]
+    }
   },
 
   certificate: {

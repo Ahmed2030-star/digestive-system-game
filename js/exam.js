@@ -2,6 +2,7 @@
   let examQuestions;
   let examQuestionIndex = 0;
   let examScore = 0;
+  let examAnswerHistory = [];
   let examAnswered = false;
   let level2;
   let level3;
@@ -13,7 +14,21 @@
   let examQuestion;
   let examOptions;
   let examFeedback;
+  let examMarkup;
+  let examContainer;
   let initialized = false;
+
+  function cacheElements() {
+    backToChallengeButton = document.getElementById("backToChallengeBtn");
+    nextQuestionButton = document.getElementById("nextQuestionBtn");
+    examProgressText = document.getElementById("examProgressText");
+    examProgressFill = document.getElementById("examProgressFill");
+    examQuestion = document.getElementById("examQuestion");
+    examOptions = document.getElementById("examOptions");
+    examFeedback = document.getElementById("examFeedback");
+    examFeedback.setAttribute("role", "status");
+    examFeedback.setAttribute("aria-live", "polite");
+  }
 
   function loadQuestion() {
     examAnswered = false;
@@ -33,6 +48,15 @@
       optionButton.onclick = () => {
         if (examAnswered) return;
         examAnswered = true;
+        examAnswerHistory.push({
+          questionId: question.id,
+          type: question.type,
+          question: question.question,
+          selectedAnswer: option,
+          correctAnswer: question.answer,
+          isCorrect: option === question.answer,
+          explanation: question.explanation
+        });
         document.querySelectorAll(".exam-option").forEach(button => button.disabled = true);
         if (option === question.answer) {
           examScore++;
@@ -64,12 +88,14 @@
     GameChallenge.hideHighlight();
     examQuestionIndex = 0;
     examScore = 0;
+    examAnswerHistory = [];
     loadQuestion();
   }
 
   function reset() {
     examQuestionIndex = 0;
     examScore = 0;
+    examAnswerHistory = [];
     examAnswered = false;
   }
 
@@ -88,7 +114,26 @@
     const date = certificate.dateEnabled
       ? `<p>${new Date().toLocaleDateString()}</p>`
       : "";
-    document.querySelector(".exam-container").innerHTML = `<div class="certificate"><h1>🏆 ${certificate.title}</h1><h2>${certificate.gameTitle}</h2><p>${certificate.description}</p><h3>Score: ${examScore}/${examQuestions.length}${scoreStatus}</h3>${studentName}${date}<button class="certificate-print" onclick="window.print()">🖨 Print Certificate</button></div>`;
+    examContainer.innerHTML = `<div class="certificate"><h1>🏆 ${certificate.title}</h1><h2>${certificate.gameTitle}</h2><p>${certificate.description}</p><h3>Score: ${examScore}/${examQuestions.length}${scoreStatus}</h3>${studentName}${date}<button class="certificate-print" onclick="window.print()">🖨 Print Certificate</button></div>`;
+  }
+
+  function showReview() {
+    const review = window.GAME_CONFIG.exam.review;
+    const accuracy = Math.round((examScore / examQuestions.length) * 100);
+    const performance = review.levels.find(level => accuracy >= level.minimum).label;
+    const incorrectAnswers = examAnswerHistory.filter(record => !record.isCorrect);
+    const stat = (label, value, className = "") => `<div class="exam-review-stat ${className}"><dt>${label}</dt><dd>${value}</dd></div>`;
+    const incorrectSection = incorrectAnswers.length
+      ? `<h2 class="exam-review-section-title">${review.incorrectSectionTitle}</h2><div class="incorrect-review-list">${incorrectAnswers.map(record => { const questionNumber = examQuestions.findIndex(question => question.id === record.questionId) + 1; return `<article class="incorrect-review-card"><h3>Question ${questionNumber} (${record.questionId}): ${record.question}</h3><dl><div><dt>${review.yourAnswerLabel}</dt><dd>${record.selectedAnswer}</dd></div><div><dt>${review.correctAnswerLabel}</dt><dd>${record.correctAnswer}</dd></div><div><dt>${review.explanationLabel}</dt><dd>${record.explanation}</dd></div></dl></article>`; }).join("")}</div>`
+      : `<p class="exam-review-all-correct">${review.allCorrectMessage}</p>`;
+    examContainer.innerHTML = `<section class="exam-review" aria-labelledby="examReviewTitle"><h1 id="examReviewTitle" tabindex="-1">${review.title}</h1><dl class="exam-review-summary">${stat(`${review.scoreLabel}:`, `${examScore}/${examQuestions.length}`)}${stat(review.correctLabel, examScore)}${stat(review.incorrectLabel, incorrectAnswers.length)}${stat(review.accuracyLabel, `${accuracy}%`)}<div class="exam-review-stat exam-review-level"><dt>${review.performanceLabel}</dt><dd>${performance}</dd></div></dl>${incorrectSection}<div class="exam-review-actions"><button type="button" class="exam-review-certificate">${review.viewCertificateButton}</button><button type="button" class="exam-review-retry">${review.retryExamButton}</button></div></section>`;
+    examContainer.querySelector(".exam-review-certificate").onclick = showCertificate;
+    examContainer.querySelector(".exam-review-retry").onclick = () => {
+      GameAudio.stopExam();
+      examContainer.innerHTML = examMarkup;
+      cacheElements();
+      start();
+    };
   }
 
   function init() {
@@ -99,15 +144,9 @@
     level2 = document.getElementById("level2");
     level3 = document.getElementById("level3");
     startExamButton = document.getElementById("startExamBtn");
-    backToChallengeButton = document.getElementById("backToChallengeBtn");
-    nextQuestionButton = document.getElementById("nextQuestionBtn");
-    examProgressText = document.getElementById("examProgressText");
-    examProgressFill = document.getElementById("examProgressFill");
-    examQuestion = document.getElementById("examQuestion");
-    examOptions = document.getElementById("examOptions");
-    examFeedback = document.getElementById("examFeedback");
-    examFeedback.setAttribute("role", "status");
-    examFeedback.setAttribute("aria-live", "polite");
+    examContainer = document.querySelector(".exam-container");
+    examMarkup = examContainer.innerHTML;
+    cacheElements();
     startExamButton.onclick = start;
     backToChallengeButton.onclick = () => {
       cleanup();
@@ -117,7 +156,7 @@
     nextQuestionButton.onclick = () => {
       examQuestionIndex++;
       if (examQuestionIndex < examQuestions.length) loadQuestion();
-      else showCertificate();
+      else showReview();
     };
   }
 
